@@ -9,6 +9,7 @@
   },
   "devDependencies": {
     "@nx/workspace": "20.7.1",
+    "@nxlv/python": "^20.12.4",
     "nx": "20.7.1"
   }
 }
