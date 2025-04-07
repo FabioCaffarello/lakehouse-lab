@@ -45,6 +45,10 @@ package-mode = false
     path = "libs/fake-factory"
     develop = true
 
+    [tool.poetry.dependencies.ddd-application-usecases]
+    path = "libs/ddd/application/usecases"
+    develop = true
+
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^4.2.0"
 ruff = "^0.11.4"
