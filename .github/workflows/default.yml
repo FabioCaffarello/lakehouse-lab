@@ -1,0 +1,20 @@
+name: Deafult
+on:
+  pull_request:
+jobs:
+  lint:
+    name: Lint
+    uses: ./.github/workflows/ci-main.yml
+    with:
+      use-coverage: false
+      final-commands: |
+        make lint
+  check:
+    name: Check
+    needs:
+      - lint
+    uses: ./.github/workflows/ci-main.yml
+    with:
+      use-coverage: true
+      final-commands: |
+        make check-all
