@@ -33,7 +33,7 @@ class TestDeviceLogFactory(unittest.TestCase):
             uuid.UUID(log["log_id"])
             uuid.UUID(log["device_id"])
         except Exception as e:
-            self.fail("log_id or device_id is not a valid UUID.")
+            self.fail("log_id or device_id is not a valid UUID. Error: " + str(e))
 
     def test_user_id_in_valid_range(self):
         log = self.factory.generate()

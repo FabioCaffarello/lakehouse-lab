@@ -1,4 +1,3 @@
-import random
 import unittest
 import uuid
 from datetime import datetime
@@ -50,17 +49,9 @@ class TestTransactionFakeFactory(unittest.TestCase):
 
     @patch("random.random", return_value=0.0)
     def test_apply_fraud_rules_account_takeover(self, mock_random):
-        """
-        Test the account takeover branch:
-        Conditions:
-         - user_id is in compromised_users
-         - amount > 500
-         - random.random() < 0.3 (forced by patch)
-        """
         transaction = self.factory._generate_base_transaction()
         transaction["user_id"] = next(iter(self.factory.compromised_users))
-        transaction["amount"] = 600.0  # greater than 500
-        original_merchant = transaction["merchant"]
+        transaction["amount"] = 600.0
         result = self.factory._apply_fraud_rules(transaction.copy())
         self.assertEqual(result["is_fraud"], 1)
         self.assertIn(result["merchant"], self.factory._mount_high_risk_merchants())
@@ -69,13 +60,6 @@ class TestTransactionFakeFactory(unittest.TestCase):
 
     @patch("random.random", return_value=0.0)
     def test_apply_fraud_rules_card_testing(self, mock_random):
-        """
-        Test the card testing branch:
-        Conditions:
-         - amount < 2.0
-         - user_id % 1000 equals 0
-         - random.random() < 0.25 (forced by patch)
-        """
         transaction = self.factory._generate_base_transaction()
         transaction["user_id"] = 2000  # 2000 % 1000 == 0
         transaction["amount"] = 1.5  # less than 2.0
@@ -84,17 +68,10 @@ class TestTransactionFakeFactory(unittest.TestCase):
         self.assertEqual(result["location"], "US")
 
     def test_generate_with_label_false(self):
-        """
-        When with_label is False, the generated transaction's is_fraud field should be None.
-        """
         transaction = self.factory.generate(with_label=False)
         self.assertIsNone(transaction["is_fraud"])
 
     def test_generate_with_label_true(self):
-        """
-        When with_label is True, the generated transaction should include an is_fraud field set to 0 or 1,
-        along with all other required keys.
-        """
         transaction = self.factory.generate(with_label=True)
         self.assertIn(transaction["is_fraud"], [0, 1])
         for key in [
