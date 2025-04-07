@@ -52,6 +52,9 @@ clean:
 	@find . -type d -name ".mypy_cache" -exec rm -rf {} +
 	@find . -type d -name ".coverage" -exec rm -rf {} +
 	@find . -type d -name ".ruff_cache" -exec rm -rf {} +
+	@find . -type d -name "reports" -exec rm -rf {} +
+	@find . -type d -name "coverage" -exec rm -rf {} +
+	@find . -type f -name ".coverage" -delete
 	@find . -type f -name "*.pyc" -delete
 	@echo "Clean complete."
 
