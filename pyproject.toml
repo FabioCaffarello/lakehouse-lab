@@ -37,6 +37,10 @@ package-mode = false
     path = "libs/ddd/infra/producers"
     develop = true
 
+    [tool.poetry.dependencies.ddd-application-dtos]
+    path = "libs/ddd/application/dtos"
+    develop = true
+
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^4.2.0"
 ruff = "^0.11.4"
