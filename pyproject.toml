@@ -41,6 +41,10 @@ package-mode = false
     path = "libs/ddd/application/dtos"
     develop = true
 
+    [tool.poetry.dependencies.fake-factory]
+    path = "libs/fake-factory"
+    develop = true
+
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^4.2.0"
 ruff = "^0.11.4"
