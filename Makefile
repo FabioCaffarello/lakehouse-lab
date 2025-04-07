@@ -12,22 +12,22 @@ PRE_COMMIT := pre-commit
 NPM := npm
 DOCKER_COMPOSE := docker compose
 
-.PHONY: help setup install precommit clean lint check-all lint-docstrings run stop build-docs serve-docs deploy-docs
+.PHONY: help install precommit clean lint check-all lint-docstrings run stop build-docs serve-docs deploy-docs
+
 
 help:
 	@echo "Available targets:"
-	@echo "  setup            - Run project setup script"
-	@echo "  install          - Create virtual environment (if needed), install dependencies, and set up pre-commit hooks"
-	@echo "  precommit        - Run pre-commit checks on all files"
-	@echo "  clean            - Remove Python caches and temporary files"
-	@echo "  lint             - Lint code using Ruff"
-	@echo "  check-all        - Run tests and linting"
-	@echo "  lint-docstrings  - Lint docstrings using pydocstyle"
-	@echo "  build-docs       - Build documentation and start PlantUML server"
-	@echo "  run 			  - Run the application"
-	@echo "  stop 			  - Stop the application"
-	@echo "  serve-docs       - Serve documentation locally"
-	@echo "  deploy-docs      - Deploy documentation to GitHub Pages"
+	@printf "  %-15s - %s\n" "install" "Create virtual environment (if needed), install dependencies, and set up pre-commit hooks"
+	@printf "  %-15s - %s\n" "precommit" "Run pre-commit checks on all files"
+	@printf "  %-15s - %s\n" "clean" "Remove Python caches and temporary files"
+	@printf "  %-15s - %s\n" "lint" "Lint code using Ruff"
+	@printf "  %-15s - %s\n" "check-all" "Run tests and linting"
+	@printf "  %-15s - %s\n" "lint-docstrings" "Lint docstrings using pydocstyle"
+	@printf "  %-15s - %s\n" "run" "Start the application using Docker Compose"
+	@printf "  %-15s - %s\n" "stop" "Stop the application"
+	@printf "  %-15s - %s\n" "build-docs" "Build documentation"
+	@printf "  %-15s - %s\n" "serve-docs" "Serve documentation locally"
+	@printf "  %-15s - %s\n" "deploy-docs" "Deploy documentation to GitHub Pages"
 
 # setup:
 # 	@chmod +x $(SCRIPTS_DIR)/init-multiple-dbs.sh
@@ -38,7 +38,7 @@ help:
 install:
 	@echo "Installing dependencies..."
 	$(NPM) install
-	$(PYTHON) install --no-root
+	$(PYTHON) install --with dev --no-root
 	$(PRE_COMMIT) install --hook-type commit-msg
 	$(PRE_COMMIT) install --hook-type pre-commit
 
@@ -83,10 +83,3 @@ deploy-docs: build-docs
 
 run:
 	$(DOCKER_COMPOSE) up -d --build
-
-run-emulator:
-	$(DOCKER_COMPOSE) --profile flower -f docker-compose.kafka.yml up -d --build
-
-stop:
-	$(DOCKER_COMPOSE)  --profile flower -f docker-compose.airflow.yml down
-	$(DOCKER_COMPOSE) down
