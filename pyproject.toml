@@ -2,24 +2,52 @@
 name = "lakehouse-lab"
 version = "0.1.0"
 description = ""
-authors = ["Fabio Caffarello <fabio.caffarello@gmail.com>"]
+authors = [ "Fabio Caffarello <fabio.caffarello@gmail.com>" ]
 readme = "README.md"
 package-mode = false
 
-[tool.poetry.dependencies]
-python = ">=3.9,<4"
+  [tool.poetry.dependencies]
+  python = ">=3.9,<4"
 
-[tool.poetry.dependencies.services-data-emulator]
-path = "./services/data-emulator"
-develop = true
+    [tool.poetry.dependencies.ddd-value-objects]
+    path = "libs/ddd/value-objects"
+    develop = true
 
-[tool.poetry.dependencies.shared-cliargs]
-path = "libs/shared/cliargs"
-develop = true
+    [tool.poetry.dependencies.services-data-emulator]
+    path = "./services/data-emulator"
+    develop = true
 
-[tool.poetry.dependencies.shared-logger]
-path = "libs/shared/logger"
-develop = true
+    [tool.poetry.dependencies.shared-cliargs]
+    path = "libs/shared/cliargs"
+    develop = true
+
+    [tool.poetry.dependencies.shared-logger]
+    path = "libs/shared/logger"
+    develop = true
+
+    [tool.poetry.dependencies.ddd-entities]
+    path = "libs/ddd/entities"
+    develop = true
+
+    [tool.poetry.dependencies.ddd-infra-storage]
+    path = "libs/ddd/infra/storage"
+    develop = true
+
+    [tool.poetry.dependencies.ddd-infra-producers]
+    path = "libs/ddd/infra/producers"
+    develop = true
+
+    [tool.poetry.dependencies.ddd-application-dtos]
+    path = "libs/ddd/application/dtos"
+    develop = true
+
+    [tool.poetry.dependencies.fake-factory]
+    path = "libs/fake-factory"
+    develop = true
+
+    [tool.poetry.dependencies.ddd-application-usecases]
+    path = "libs/ddd/application/usecases"
+    develop = true
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^4.2.0"
@@ -30,7 +58,8 @@ pytest-sugar = "^1.0.0"
 pytest-cov = "^6.1.1"
 pytest-html = "^4.1.1"
 pytest-asyncio = "^0.26.0"
+coverage = "^7.8.0"
 
 [build-system]
-requires = ["poetry-core>=2.0.0,<3.0.0"]
+requires = [ "poetry-core>=2.0.0,<3.0.0" ]
 build-backend = "poetry.core.masonry.api"
