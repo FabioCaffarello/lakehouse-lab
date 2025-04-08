@@ -16,12 +16,24 @@
     {
       "plugin": "@nxlv/python",
       "options": {
-        "packageManager": "uv"
+        "packageManager": "poetry"
       }
     }
   ],
   "release": {
     "projects": ["services-data-emulator"],
-    "conventionalCommits": true
+    "conventionalCommits": true,
+    "changelog": {
+      "workspaceChangelog": {
+        "createRelease": "github"
+      },
+      "projectChangelogs": {
+        "renderOptions": {
+          "authors": true,
+          "commitReferences": true,
+          "versionTitleDate": true
+        }
+      }
+    }
   }
 }
