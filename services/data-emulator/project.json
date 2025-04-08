@@ -37,6 +37,15 @@
       },
       "cache": true
     },
+    "build-tmp": {
+      "executor": "nx:run-commands",
+      "outputs": ["{projectRoot}/dist"],
+      "options": {
+        "cwd": "{projectRoot}",
+        "command": ["poetry build"],
+        "parallel": false
+      }
+    },
     "lint": {
       "executor": "@nxlv/python:ruff-check",
       "outputs": [],
