@@ -19,5 +19,9 @@
         "packageManager": "uv"
       }
     }
-  ]
+  ],
+  "release": {
+    "projects": ["services-data-emulator"],
+    "conventionalCommits": true
+  }
 }

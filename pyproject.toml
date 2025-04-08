@@ -49,6 +49,18 @@ package-mode = false
     path = "libs/ddd/application/usecases"
     develop = true
 
+    [tool.poetry.dependencies.ddd-adapters-api]
+    path = "libs/ddd/adapters/api"
+    develop = true
+
+    [tool.poetry.dependencies.ddd-adapters-controllers]
+    path = "libs/ddd/adapters/controllers"
+    develop = true
+
+    [tool.poetry.dependencies.settings-data-emulator]
+    path = "libs/settings/emulator-settings"
+    develop = true
+
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^4.2.0"
 ruff = "^0.11.4"
