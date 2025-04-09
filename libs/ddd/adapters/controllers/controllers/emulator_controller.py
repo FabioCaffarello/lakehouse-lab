@@ -16,8 +16,8 @@ def get_config(request: Request) -> Settings:
 
 def get_minio_client(
     config: Settings = Depends(get_config),
-) -> MinioClient:  # noqa: B008
-    return MinioClient(
+) -> MinioStorageClient:  # noqa: B008
+    return MinioStorageClient(
         endpoint=config.minio_endpoint,
         access_key=config.minio_access_key,
         secret_key=config.minio_secret_key,
@@ -38,7 +38,7 @@ def get_kafka_producer(
 def get_start_emulator_usecase(
     config: Settings = Depends(get_config),  # noqa: B008
     kafka_producer: KafkaProducerStrategy = Depends(get_kafka_producer),  # noqa: B008
-    minio_client: MinioClient = Depends(get_minio_client),  # noqa: B008
+    minio_client: MinioStorageClient = Depends(get_minio_client),  # noqa: B008
 ) -> StartEmulatorUseCase:
     return StartEmulatorUseCase(
         kafka_producer=kafka_producer,
