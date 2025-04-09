@@ -1,9 +1,15 @@
+import asyncio
+import contextlib
 import logging
+import multiprocessing
 import os
 import sys
 
+import uvicorn
+from api.emulator_rest_api import app as rest_app
 from cliargs.cli import new_args_parser
-from emulator.internal.settings import Settings
+from emulator.cmd.signal_handler import SignalHandler
+from emulator_settings.settings import Settings
 from logger.log import setup_logging
 
 
@@ -40,9 +46,30 @@ def setup_service() -> tuple[Settings, logging.Logger]:
     return config, log
 
 
+def run_rest_server(config: Settings):
+    """Run the REST API server on port 8000."""
+    rest_app.state.config = config
+    uvicorn.run(rest_app, host="0.0.0.0", port=8000, log_level="info")
+
+
 def main():
     config, log = setup_service()
     log.info(f"Loaded configuration: {config}")
+
+    rest_process = multiprocessing.Process(target=run_rest_server, args=(config,))
+    rest_process.start()
+
+    signal_handler = SignalHandler(rest_process)
+
+    async def run_signal_handler():
+        signal_handler.register_signal_handler()
+        await signal_handler.shutdown.wait()
+
+    with contextlib.suppress(KeyboardInterrupt):
+        asyncio.run(run_signal_handler())
+
+    rest_process.join()
+    return 0
 
 
 if __name__ == "__main__":

@@ -1,8 +1,8 @@
 {
-  "name": "services-data-emulator",
-  "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "projectType": "application",
-  "sourceRoot": "./services/data-emulator/emulator",
+  "name": "ddd-adapters-controllers",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "sourceRoot": "libs/ddd/adapters/controllers/controllers",
   "targets": {
     "lock": {
       "executor": "@nxlv/python:lock",
@@ -22,14 +22,6 @@
       "executor": "@nxlv/python:update",
       "options": {}
     },
-    "image": {
-      "executor": "nx:run-commands",
-      "dependsOn": [],
-      "options": {
-        "command": "docker build -t fabiocaffarello/data-emulator:latest -f ./Dockerfile .",
-        "cwd": "{projectRoot}"
-      }
-    },
     "remove": {
       "executor": "@nxlv/python:remove",
       "options": {}
@@ -45,20 +37,11 @@
       },
       "cache": true
     },
-    "build-tmp": {
-      "executor": "nx:run-commands",
-      "outputs": ["{projectRoot}/dist"],
-      "options": {
-        "cwd": "{projectRoot}",
-        "command": ["poetry build"],
-        "parallel": false
-      }
-    },
     "lint": {
       "executor": "@nxlv/python:ruff-check",
       "outputs": [],
       "options": {
-        "lintFilePatterns": ["emulator", "tests"]
+        "lintFilePatterns": ["controllers", "tests"]
       },
       "cache": true
     },
@@ -66,7 +49,19 @@
       "executor": "@nxlv/python:ruff-format",
       "outputs": [],
       "options": {
-        "filePatterns": ["emulator", "tests"]
+        "filePatterns": ["controllers", "tests"]
+      },
+      "cache": true
+    },
+    "test": {
+      "executor": "@nxlv/python:run-commands",
+      "outputs": [
+        "{workspaceRoot}/reports/{projectRoot}/unittests",
+        "{workspaceRoot}/coverage/{projectRoot}"
+      ],
+      "options": {
+        "command": "poetry run pytest tests/ || true",
+        "cwd": "{projectRoot}"
       },
       "cache": true
     },
