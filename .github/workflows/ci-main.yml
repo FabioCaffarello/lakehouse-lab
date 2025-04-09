@@ -201,7 +201,7 @@ jobs:
       - name: Install Python Dependencies (Poetry)
         run: |
           poetry config virtualenvs.in-project true
-          poetry install --with dev --no-interaction --no-ansi
+          poetry install --with dev --with docs --no-interaction --no-ansi
       # ---------------------------------------------------
       # 13) CACHE Nx's .nx/cache
       #    - Greatly speeds up repeated builds/tests
