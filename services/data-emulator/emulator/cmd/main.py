@@ -31,7 +31,7 @@ def setup_service() -> tuple[Settings, logging.Logger]:
         log_level=args.log_level,
         verbose=args.verbose,
         debug=args.debug,
-        kafka_bootstrap_servers=os.getenv("KAFKA_BOOTSTRAP_SERVERS", "localhost:9092"),
+        kafka_bootstrap_servers=os.getenv("KAFKA_BOOTSTRAP_SERVERS"),
         kafka_username=os.getenv("KAFKA_USERNAME"),
         kafka_password=os.getenv("KAFKA_PASSWORD"),
     )
