@@ -22,6 +22,14 @@
       "executor": "@nxlv/python:update",
       "options": {}
     },
+    "image": {
+      "executor": "nx:run-commands",
+      "dependsOn": [],
+      "options": {
+        "command": "docker build -t fabiocaffarello/data-emulator:latest -f ./Dockerfile .",
+        "cwd": "{projectRoot}"
+      }
+    },
     "remove": {
       "executor": "@nxlv/python:remove",
       "options": {}

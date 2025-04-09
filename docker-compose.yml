@@ -1,0 +1,47 @@
+services:
+  data-emulator:
+    image: fabiocaffarello/data-emulator:latest
+    container_name: data-emulator
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    networks:
+      - lakehouse-lab-network
+  minio:
+    restart: always
+    image: minio/minio
+    platform: linux/amd64
+    container_name: minio_s3
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    command: server /data --console-address ":9001" --address ":9000"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_USERNAME}
+      MINIO_ROOT_PASSWORD: ${MINIO_PASSWORD}
+    volumes:
+      - minio-data:/data
+    networks:
+      - lakehouse-lab-network
+  mc:
+    image: minio/mc
+    platform: linux/amd64
+    depends_on:
+      - minio
+    container_name: mc
+    env_file:
+      - .env
+    entrypoint: >
+      /bin/sh -c " /tmp/wait-for-it.sh minio:9000 && /usr/bin/mc alias set minio http://minio:9000 ${AWS_ACCESS_KEY_ID} ${AWS_SECRET_ACCESS_KEY} && /usr/bin/mc mb minio/mlflow; exit 0; "
+
+    volumes:
+      - ./scripts/wait-for-it.sh:/tmp/wait-for-it.sh
+    networks:
+      - lakehouse-lab-network
+volumes:
+  minio-data:
+networks:
+  lakehouse-lab-network:
+    name: lakehouse-lab-network
+    driver: bridge
