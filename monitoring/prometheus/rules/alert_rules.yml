@@ -1,0 +1,11 @@
+groups:
+  - name: Kafka Alerts
+    rules:
+      - alert: KafkaHighRequestLatency
+        expr: kafka_request_latency_ms > 100
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High request latency on Kafka"
+          description: "Kafka request latency is above 100ms for more than 1 minute."
