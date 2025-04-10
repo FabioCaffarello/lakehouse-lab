@@ -12,7 +12,7 @@ PRE_COMMIT := pre-commit
 NPM := npm
 DOCKER_COMPOSE := docker compose
 
-.PHONY: help install precommit clean lint check-all lint-docstrings run-prod-compose stop-prod-compose run-compose stop-compose setup-airflow-conn build-docs serve-docs deploy-docs
+.PHONY: help install precommit clean lint-all check-all lint-affected check-affected lint-docstrings run-prod-compose stop-prod-compose setup-airflow-conn run-compose setup stop-compose build-docs serve-docs deploy-docs
 
 
 help:
@@ -20,8 +20,10 @@ help:
 	@printf "  %-15s - %s\n" "install" "Create virtual environment (if needed), install dependencies, and set up pre-commit hooks"
 	@printf "  %-15s - %s\n" "precommit" "Run pre-commit checks on all files"
 	@printf "  %-15s - %s\n" "clean" "Remove Python caches and temporary files"
-	@printf "  %-15s - %s\n" "lint" "Lint code using Ruff"
+	@printf "  %-15s - %s\n" "lint-all" "Run all linters and formatters"
 	@printf "  %-15s - %s\n" "check-all" "Run tests and linting"
+	@printf "  %-15s - %s\n" "lint-affected" "Run linters and formatters on affected files"
+	@printf "  %-15s - %s\n" "check-affected" "Run tests and linting on affected files"
 	@printf "  %-15s - %s\n" "lint-docstrings" "Lint docstrings using pydocstyle"
 	@printf "  %-15s - %s\n" "run-prod-compose" "Run production Docker Compose setup"
 	@printf "  %-15s - %s\n" "stop-prod-compose" "Stop production Docker Compose setup"
@@ -68,13 +70,21 @@ build-docs:
 	@npx nx graph --file=docs/dependency-graph/index.html
 	@docker run -d -p 8080:8080 plantuml/plantuml-server:jetty
 
-lint:
+lint-all:
 	npx nx run-many --target=lint --all
 	npx nx run-many --target=fmt --all
+
+lint-affected:
+	npx nx affected -t lint
+	npx nx affected -t fmt
 
 check-all:
 	npx nx run-many --target=test --all
 	npx nx run-many --target=check --all
+
+check-affected:
+	npx nx affected -t test
+	npx nx affected -t check
 
 serve-docs: build-docs
 	@echo "Serving documentation..."
