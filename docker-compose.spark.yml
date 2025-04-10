@@ -1,0 +1,35 @@
+x-spark-common: &spark-common
+  build:
+    context: ./deploy/docker/spark/
+    dockerfile: Dockerfile
+  volumes:
+    - ./airflow-app/jobs:/opt/bitnami/spark/jobs
+    - ./.artefacts/spark/local-cluster/mnt/spark-checkpoints:/tmp/spark-checkpoints
+    - ./.artefacts/spark/local-cluster/mnt/spark-state:/tmp/spark-state
+  networks:
+    - lakehouse-lab-network
+services:
+  spark-master:
+    !!merge <<: *spark-common
+    container_name: spark-master
+    command: bin/spark-class org.apache.spark.deploy.master.Master
+    ports:
+      - "9095:8080"
+      - "7077:7077"
+  spark-worker-1: &spark-worker
+    !!merge <<: *spark-common
+    command: bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
+    container_name: spark-worker-1
+    depends_on:
+      - spark-master
+    environment:
+      SPARK_MODE: worker
+      SPARK_WORKER_CORES: 1
+      SPARK_WORKER_MEMORY: 1g
+      SPARK_MASTER_URL: spark://spark-master:7077
+  spark-worker-2:
+    !!merge <<: *spark-worker
+    container_name: spark-worker-2
+networks:
+  lakehouse-lab-network:
+    external: true

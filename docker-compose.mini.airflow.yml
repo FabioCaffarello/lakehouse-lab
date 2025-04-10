@@ -1,0 +1,48 @@
+x-airflow-common: &airflow-common
+  build:
+    context: ./deploy/docker/airflow/
+    dockerfile: Dockerfile
+  env_file:
+    - ./airflow.env
+  volumes:
+    - ./services/airflow-app/jobs:/opt/airflow/jobs
+    - ./services/airflow-app/dags:/opt/airflow/dags
+    - ./services/airflow-app/logs:/opt/airflow/logs
+    - ./services/airflow-app/plugins:/opt/airflow/plugins
+  depends_on:
+    - postgres
+  networks:
+    - lakehouse-lab-network
+services:
+  postgres:
+    image: postgres:14.0
+    container_name: postgres
+    environment:
+      - POSTGRES_USER=airflow
+      - POSTGRES_PASSWORD=airflow
+      - POSTGRES_DB=airflow
+    healthcheck:
+      test: ["CMD-SHELL", "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - lakehouse-lab-network
+  webserver:
+    !!merge <<: *airflow-common
+    container_name: webserver
+    command: webserver
+    ports:
+      - "8085:8080"
+    depends_on:
+      - scheduler
+  scheduler:
+    !!merge <<: *airflow-common
+    container_name: scheduler
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: bash -c "airflow db migrate && airflow users create --username admin --firstname Fabio --lastname Caffarello --role Admin --email fabio.caffarello@gmail.com --password admin && airflow scheduler"
+networks:
+  lakehouse-lab-network:
+    external: true
