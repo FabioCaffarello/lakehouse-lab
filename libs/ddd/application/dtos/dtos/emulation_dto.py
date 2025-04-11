@@ -20,3 +20,19 @@ class StartEmulatorDTO(BaseModel):
     emulator_sync: str
     emulation_domain: str
     timeout: int
+
+
+@dataclass(frozen=True)
+class StatusDTO:
+    """Data Transfer Object representing the status of an emulation."""
+
+    global_status: str
+    threads: dict[str, str]
+
+
+@dataclass(frozen=True)
+class EmulationStatusDTO:
+    """Data Transfer Object representing the status of an emulation."""
+
+    id: EmulationID
+    status: StatusDTO

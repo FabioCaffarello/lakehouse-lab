@@ -8,7 +8,7 @@ jobs:
     with:
       use-coverage: false
       final-commands: |
-        make lint
+        make lint-affected
   check:
     name: Check
     needs:
@@ -17,4 +17,4 @@ jobs:
     with:
       use-coverage: true
       final-commands: |
-        make check-all
+        make check-affected

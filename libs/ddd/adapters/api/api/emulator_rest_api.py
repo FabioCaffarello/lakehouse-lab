@@ -6,12 +6,18 @@ It includes the main application instance, routes, and event handlers.
 
 from controllers import emulator_controller
 from fastapi import FastAPI
+from mem_repository.in_memory_repository import InMemoryRepository
 
 app = FastAPI(
     title="Emulator Service REST API",
     description="API for the Emulator Service.",
     version="1.0.0",
 )
+
+
+@app.on_event("startup")
+def startup_event():
+    app.state.repository = InMemoryRepository()
 
 
 app.include_router(emulator_controller.router)
