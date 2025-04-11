@@ -17,6 +17,21 @@ x-kafka-controller-env: &kafka-controller-env
   KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
   KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka-controller-1:9093,2@kafka-controller-2:9093
   KAFKA_CLUSTER_ID: 5L6g3nShT-eMCtK--X86sw
+x-airflow-common: &airflow-common
+  build:
+    context: ./deploy/docker/airflow/
+    dockerfile: Dockerfile
+  env_file:
+    - ./airflow.env
+  volumes:
+    - ./services/airflow-app/jobs:/opt/airflow/jobs
+    - ./services/airflow-app/dags:/opt/airflow/dags
+    - ./services/airflow-app/logs:/opt/airflow/logs
+    - ./services/airflow-app/plugins:/opt/airflow/plugins
+  depends_on:
+    - postgres
+  networks:
+    - lakehouse-lab-slim-network
 services:
   kafka-controller-1:
     !!merge <<: *kafka-controller-base
@@ -165,6 +180,10 @@ services:
 
 
 
+
+
+
+
           brokers: [kafka-broker-1:19092,kafka-broker-2:19092]
           schemaRegistry:
             enabled: false
@@ -225,10 +244,18 @@ services:
 
 
 
+
+
+
+
           adminApi:
             enabled: false
             urls: ["http://kafka_broker:9644"]
         connect:
+
+
+
+
 
 
 
@@ -359,6 +386,35 @@ services:
       - lakehouse-lab-slim-network
     ports:
       - 8088:8088
+  postgres:
+    image: postgres:14.0
+    container_name: postgres
+    environment:
+      - POSTGRES_USER=airflow
+      - POSTGRES_PASSWORD=airflow
+      - POSTGRES_DB=airflow
+    healthcheck:
+      test: ["CMD-SHELL", "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - lakehouse-lab-slim-network
+  webserver:
+    !!merge <<: *airflow-common
+    container_name: webserver
+    command: webserver
+    ports:
+      - "8085:8080"
+    depends_on:
+      - scheduler
+  scheduler:
+    !!merge <<: *airflow-common
+    container_name: scheduler
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: bash -c "airflow db migrate && airflow users create --username admin --firstname Fabio --lastname Caffarello --role Admin --email fabio.caffarello@gmail.com --password admin && airflow scheduler"
 volumes:
   minio-data:
 networks:
