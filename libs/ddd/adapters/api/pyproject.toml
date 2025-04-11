@@ -35,6 +35,10 @@ readme = "README.md"
     path = "../controllers"
     develop = true
 
+    [tool.poetry.dependencies.repository-in-memory]
+    path = "../../infra/repository/in-memory"
+    develop = true
+
 [build-system]
 requires = [ "poetry-core" ]
 build-backend = "poetry.core.masonry.api"
