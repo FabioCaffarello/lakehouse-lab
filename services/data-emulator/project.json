@@ -24,7 +24,7 @@
     },
     "image": {
       "executor": "nx:run-commands",
-      "dependsOn": [],
+      "dependsOn": ["build"],
       "options": {
         "command": "docker build -t fabiocaffarello/data-emulator:latest -f ./Dockerfile .",
         "cwd": "{projectRoot}"
