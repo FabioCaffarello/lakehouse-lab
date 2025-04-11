@@ -5,12 +5,17 @@ from abc import ABC, abstractmethod
 from typing import Any
 
 from confluent_kafka.admin import AdminClient, NewTopic
-from dtos.emulation_dto import EmulationScheduledDTO, StartEmulatorDTO
+from dtos.emulation_dto import (
+    EmulationScheduledDTO,
+    EmulationStatusDTO,
+    StartEmulatorDTO,
+)
 from fake_factory.fraud.device_factory import DeviceLogFactory
 from fake_factory.fraud.transaction_factory import TransactionFakeFactory
 from fake_factory.fraud.user_profile_factory import UserProfileFactory
 from fastapi import BackgroundTasks
 from logger.log import get_logger_from_env
+from mem_repository.in_memory_repository import InMemoryRepository
 from producers.kafka.producer import KafkaProducerStrategy
 from storage.minio.storage import MinioStorageClient
 from value_objects.emulator_id import EmulationID
@@ -150,7 +155,9 @@ class StartEmulatorUseCase:
         kafka_producer: KafkaProducerStrategy,
         kafka_brokers: str,
         minio_client: MinioStorageClient,
+        repository: InMemoryRepository,
     ):
+        self.repository = repository
         self.topics_mapping = {
             "transaction": "transactions",
             "user-profile": "user-profiles",
@@ -187,6 +194,9 @@ class StartEmulatorUseCase:
         """
         emulation_id = EmulationID.generate()
         sync_type = dto.emulator_sync.lower()
+
+        self.repository.create_status(emulation_id.value, "processing")
+        logger.info(f"Repository Store: {self.repository._store}")
 
         # Retrieve the producer wrapper based on the sync type.
         producer_wrapper = self.producer_wrapper_mapping.get(sync_type)
@@ -242,13 +252,14 @@ class StartEmulatorUseCase:
             stop_event (threading.Event): Event to signal when to stop production.
             factory(Any): The fake data factory.
         """
+        self.repository.update_thread_status(emulation_id.value, thread_id, "started")
         while not stop_event.is_set():
             fake_data = factory.generate()
             if fake_data is None:
                 logger.info(f"Thread {thread_id} - No more data to process")
                 break
             message_payload = {
-                "emulation_id": str(emulation_id),
+                "emulation_id": str(emulation_id.value),
                 "timestamp": time.time(),
                 "data": fake_data,
             }
@@ -258,6 +269,10 @@ class StartEmulatorUseCase:
                 logger.info(f"Thread {thread_id} - Produced message: {message_payload}")
             except Exception as e:
                 logger.error(f"Failed to produce message: {e}")
+                self.repository.update_thread_status(
+                    emulation_id.value, thread_id, "error"
+                )
+        self.repository.update_thread_status(emulation_id.value, thread_id, "finished")
 
     def produce_data_in_parallel(
         self,
@@ -324,3 +339,4 @@ class StartEmulatorUseCase:
         timer.cancel()
         producer.flush()
         logger.info("Emulation finished")
+        self.repository.update_status(emulation_id.value, "completed")
