@@ -5,11 +5,7 @@ from abc import ABC, abstractmethod
 from typing import Any
 
 from confluent_kafka.admin import AdminClient, NewTopic
-from dtos.emulation_dto import (
-    EmulationScheduledDTO,
-    EmulationStatusDTO,
-    StartEmulatorDTO,
-)
+from dtos.emulation_dto import EmulationScheduledDTO, StartEmulatorDTO
 from fake_factory.fraud.device_factory import DeviceLogFactory
 from fake_factory.fraud.transaction_factory import TransactionFakeFactory
 from fake_factory.fraud.user_profile_factory import UserProfileFactory
