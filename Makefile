@@ -12,7 +12,7 @@ PRE_COMMIT := pre-commit
 NPM := npm
 DOCKER_COMPOSE := docker compose
 
-.PHONY: help install precommit clean lint-all check-all lint-affected check-affected lint-docstrings run-prod-compose stop-prod-compose setup-airflow-conn run-compose setup stop-compose build-docs serve-docs deploy-docs
+.PHONY: help install precommit clean lint-all check-all lint-affected check-affected lint-docstrings run-prod-compose stop-prod-compose setup-airflow-conn image run-compose setup stop-compose build-docs serve-docs deploy-docs
 
 
 help:
@@ -33,6 +33,7 @@ help:
 	@printf "  %-15s - %s\n" "stop-compose" "Stop the composer"
 	@printf "  %-15s - %s\n" "build-docs" "Build documentation"
 	@printf "  %-15s - %s\n" "serve-docs" "Serve documentation locally"
+	@printf "  %-15s - %s\n" "image" "Build all images"
 	@printf "  %-15s - %s\n" "deploy-docs" "Deploy documentation to GitHub Pages"
 
 setup:
@@ -99,6 +100,9 @@ run-prod-compose:
 stop-prod-compose:
 	$(DOCKER_COMPOSE) --profile flower -f docker-compose.airflow.yml down
 	$(DOCKER_COMPOSE) down
+
+image:
+	npx nx run-many --target=image --all
 
 run-compose:
 	$(DOCKER_COMPOSE) up -d
