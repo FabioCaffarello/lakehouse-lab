@@ -113,4 +113,4 @@ stop-compose:
 	$(DOCKER_COMPOSE) down
 
 setup-airflow-conn:
-	docker exec -it webserver airflow connections add spark-conn --conn-type spark --conn-host "spark://spark-master:7077" --conn-extra '{"spark.jars.packages": "org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.5"}'
+	docker exec -it webserver airflow connections add spark-conn --conn-type spark --conn-host "spark://spark-master:7077" --conn-extra '{"spark.jars.packages": "org.apache.hadoop:hadoop-aws:3.3.4,com.amazonaws:aws-java-sdk-bundle:1.12.262"}'

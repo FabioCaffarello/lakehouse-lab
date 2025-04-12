@@ -18,6 +18,9 @@ class StartEmulatorOperator(BaseOperator):
         endpoint: str,
         emulator_sync: str,
         emulation_domain: str,
+        format_type: str,
+        sync_type: str,
+        max_chunk_size: int,
         timeout: int,
         *args,
         **kwargs,
@@ -26,6 +29,9 @@ class StartEmulatorOperator(BaseOperator):
         self.endpoint = endpoint
         self.emulator_sync = emulator_sync
         self.emulation_domain = emulation_domain
+        self.format_type = format_type
+        self.sync_type = sync_type
+        self.max_chunk_size = max_chunk_size
         self.timeout = timeout
         self.logger = logging.getLogger(__name__)
 
@@ -33,6 +39,9 @@ class StartEmulatorOperator(BaseOperator):
         payload = {
             "emulator_sync": self.emulator_sync,
             "emulation_domain": self.emulation_domain,
+            "format_type": self.format_type,
+            "sync_type": self.sync_type,
+            "max_chunk_size": self.max_chunk_size,
             "timeout": self.timeout,
         }
         headers = {"Content-Type": "application/json"}

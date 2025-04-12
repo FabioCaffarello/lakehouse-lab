@@ -32,6 +32,16 @@ x-airflow-common: &airflow-common
     - postgres
   networks:
     - lakehouse-lab-slim-network
+x-spark-common: &spark-common
+  build:
+    context: ./deploy/docker/spark/
+    dockerfile: Dockerfile
+  volumes:
+    - ./services/airflow-app/jobs:/opt/bitnami/spark/jobs
+    - ./.artefacts/spark/local-cluster/mnt/spark-checkpoints:/tmp/spark-checkpoints
+    - ./.artefacts/spark/local-cluster/mnt/spark-state:/tmp/spark-state
+  networks:
+    - lakehouse-lab-slim-network
 services:
   kafka-controller-1:
     !!merge <<: *kafka-controller-base
@@ -184,11 +194,39 @@ services:
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
           brokers: [kafka-broker-1:19092,kafka-broker-2:19092]
           schemaRegistry:
             enabled: false
             urls: ["http://schema-registry:18081"]
         redpanda:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -310,6 +348,20 @@ services:
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
           enabled: false
           clusters:
             - name: local-connect-cluster
@@ -352,7 +404,7 @@ services:
     env_file:
       - .env.slim
     entrypoint: >
-      /bin/sh -c " echo 'Waiting for MinIO to start...' && /bin/sleep 10 && mc alias set minio http://minio:9000 $$AWS_ACCESS_KEY_ID $$AWS_SECRET_ACCESS_KEY && mc mb minio/warehouse && echo 'Buckets created.'"
+      /bin/sh -c " echo 'Waiting for MinIO to start...' && /bin/sleep 10 && mc alias set minio http://minio:9000 $$AWS_ACCESS_KEY_ID $$AWS_SECRET_ACCESS_KEY && mc mb minio/bronze && mc mb minio/silver && echo 'Buckets created.'"
 
     volumes:
       - ./scripts/wait-for-it.sh:/tmp/wait-for-it.sh
@@ -415,6 +467,27 @@ services:
       postgres:
         condition: service_healthy
     command: bash -c "airflow db migrate && airflow users create --username admin --firstname Fabio --lastname Caffarello --role Admin --email fabio.caffarello@gmail.com --password admin && airflow scheduler"
+  spark-master:
+    !!merge <<: *spark-common
+    container_name: spark-master
+    command: bin/spark-class org.apache.spark.deploy.master.Master
+    ports:
+      - "9095:8080"
+      - "7077:7077"
+  spark-worker-1: &spark-worker
+    !!merge <<: *spark-common
+    command: bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
+    container_name: spark-worker-1
+    depends_on:
+      - spark-master
+    environment:
+      SPARK_MODE: worker
+      SPARK_WORKER_CORES: 1
+      SPARK_WORKER_MEMORY: 1g
+      SPARK_MASTER_URL: spark://spark-master:7077
+  spark-worker-2:
+    !!merge <<: *spark-worker
+    container_name: spark-worker-2
 volumes:
   minio-data:
 networks:
