@@ -4,9 +4,18 @@ import unittest
 from unittest.mock import MagicMock, patch
 
 from dtos.emulation_dto import EmulationScheduledDTO, StartEmulatorDTO
+from logger.log import get_logger_from_env
+from mem_repository.in_memory_repository import InMemoryRepository
 from producers.kafka.producer import KafkaProducerStrategy
 from storage.minio.storage import MinioStorageClient
 from usecases.start_emulator import StartEmulatorUseCase, SyncProducer
+
+logger = get_logger_from_env(__name__)
+
+
+class DummyEmulationID:
+    def __init__(self, value):
+        self.value = value
 
 
 class DummyBackgroundTasks:
@@ -17,27 +26,12 @@ class DummyBackgroundTasks:
         self.tasks.append((func, args, kwargs))
 
 
-class DummyStartEmulatorDTO:
-    def __init__(self, emulator_sync, emulation_domain, timeout):
-        self.emulator_sync = emulator_sync
-        self.emulation_domain = emulation_domain
-        self.timeout = timeout
-
-
-class DummyEmulationScheduledDTO:
-    def __init__(self, id, emulator_sync, emulation_domain, timeout):
-        self.id = id
-        self.emulator_sync = emulator_sync
-        self.emulation_domain = emulation_domain
-        self.timeout = timeout
-
-
 class DummyFakeFactory:
     def generate(self):
         return {"transaction_id": "dummy_txn", "value": 123}
 
 
-class DummySyncProducer:
+class DummySyncProducer(SyncProducer):
     def __init__(self):
         self.produce_called = 0
         self.flush_called = False
@@ -48,17 +42,22 @@ class DummySyncProducer:
     def flush(self):
         self.flush_called = True
 
+    def setup_resource(self, resource_name: str) -> None:
+        pass
+
 
 class TestStartEmulatorUseCase(unittest.TestCase):
     def setUp(self):
         self.dummy_kafka_producer = MagicMock(spec=KafkaProducerStrategy)
         self.dummy_minio_client = MagicMock(spec=MinioStorageClient)
         self.kafka_brokers = "dummy_broker:9092"
+        self.dummy_repository = MagicMock(spec=InMemoryRepository)
 
         self.use_case = StartEmulatorUseCase(
             kafka_producer=self.dummy_kafka_producer,
             kafka_brokers=self.kafka_brokers,
             minio_client=self.dummy_minio_client,
+            repository=self.dummy_repository,
         )
 
         self.use_case.fake_factories = {
@@ -72,15 +71,28 @@ class TestStartEmulatorUseCase(unittest.TestCase):
             "device-log": "device_logs_topic",
             "default": "default_topic",
         }
+
         self.dummy_producer_wrapper = MagicMock(spec=SyncProducer)
-        self.use_case.producer_wrapper_mapping = {
-            "kafka": self.dummy_producer_wrapper,
-            "minio": self.dummy_producer_wrapper,
-        }
+
+        class DummyProducerWrapperFactory:
+            def create_producer_wrapper(inner_self, dto):
+                if dto.emulator_sync in ("kafka", "minio"):
+                    return self.dummy_producer_wrapper
+                else:
+                    raise ValueError(
+                        f"Unsupported emulator sync type: {dto.emulator_sync}"
+                    )
+
+        self.use_case.producer_wrapper_factory = DummyProducerWrapperFactory()
 
     def test_execute_valid(self):
         dto = StartEmulatorDTO(
-            emulator_sync="kafka", emulation_domain="transaction", timeout=2
+            emulator_sync="kafka",
+            emulation_domain="transaction",
+            timeout=2,
+            format_type="json",
+            sync_type="grouped",
+            max_chunk_size=1024,
         )
         background_tasks = DummyBackgroundTasks()
         num_threads = 2
@@ -97,16 +109,26 @@ class TestStartEmulatorUseCase(unittest.TestCase):
 
     def test_execute_invalid_sync(self):
         dto = StartEmulatorDTO(
-            emulator_sync="unsupported", emulation_domain="transaction", timeout=2
+            emulator_sync="unsupported",
+            emulation_domain="transaction",
+            timeout=2,
+            format_type="json",
+            sync_type="grouped",
+            max_chunk_size=1024,
         )
         background_tasks = DummyBackgroundTasks()
         with self.assertRaises(ValueError) as cm:
             self.use_case.execute(dto, background_tasks, num_threads=1)
-        self.assertIn("Producer wrapper not found", str(cm.exception))
+        self.assertIn("Unsupported emulator sync type", str(cm.exception))
 
     def test_execute_invalid_domain(self):
         dto = StartEmulatorDTO(
-            emulator_sync="kafka", emulation_domain="unsupported_domain", timeout=2
+            emulator_sync="kafka",
+            emulation_domain="unsupported_domain",
+            timeout=2,
+            format_type="json",
+            sync_type="grouped",
+            max_chunk_size=1024,
         )
         background_tasks = DummyBackgroundTasks()
         with self.assertRaises(ValueError) as cm:
@@ -121,8 +143,9 @@ class TestStartEmulatorUseCase(unittest.TestCase):
             None,
         ]
         stop_event = threading.Event()
+        dummy_emul_id = DummyEmulationID("emul_id")
         self.use_case.produce_data(
-            "emul_id", 0, dummy_producer, "dummy_topic", stop_event, fake_factory
+            dummy_emul_id, 0, dummy_producer, "dummy_topic", stop_event, fake_factory
         )
         self.assertEqual(dummy_producer.produce_called, 1)
 
@@ -139,10 +162,11 @@ class TestStartEmulatorUseCase(unittest.TestCase):
 
         dummy_producer.produce = raise_exception
         stop_event = threading.Event()
+        dummy_emul_id = DummyEmulationID("emul_id")
         thread = threading.Thread(
             target=self.use_case.produce_data,
             args=(
-                "emul_id",
+                dummy_emul_id,
                 0,
                 dummy_producer,
                 "dummy_topic",
@@ -162,10 +186,11 @@ class TestStartEmulatorUseCase(unittest.TestCase):
         dummy_producer = DummySyncProducer()
         fake_factory = DummyFakeFactory()
         stop_event = threading.Event()
+        dummy_emul_id = DummyEmulationID("emul_id")
         num_threads = 3
 
         self.use_case.produce_data_in_parallel(
-            "emul_id",
+            dummy_emul_id,
             dummy_producer,
             "dummy_topic",
             fake_factory,
@@ -184,9 +209,10 @@ class TestStartEmulatorUseCase(unittest.TestCase):
         fake_factory = DummyFakeFactory()
         fake_factory.generate = fake_generate
 
+        dummy_emul_id = DummyEmulationID("emul_id")
         start_time = time.time()
         self.use_case._run_emulation_task(
-            "emul_id",
+            dummy_emul_id,
             dummy_producer,
             "dummy_topic",
             fake_factory,
@@ -212,9 +238,10 @@ class TestStartEmulatorUseCase(unittest.TestCase):
 
         fake_factory = DummyFakeFactory()
         fake_factory.generate = fake_generate
+        dummy_emul_id = DummyEmulationID("emul_id")
         start_time = time.time()
         self.use_case._run_emulation_task(
-            "emul_id",
+            dummy_emul_id,
             dummy_producer,
             "dummy_topic",
             fake_factory,
@@ -227,19 +254,18 @@ class TestStartEmulatorUseCase(unittest.TestCase):
         self.assertGreaterEqual(elapsed, 1.2)
 
     def test_run_emulation_task_zero_timeout(self):
-        # Test the scenario when timeout is 0 so the stop event is set immediately.
         dummy_producer = DummySyncProducer()
 
         def fake_generate():
-            # Even if generate returns a valid record, with timeout 0 the loop should exit immediately.
             time.sleep(0.1)
             return {"transaction_id": "txn_zero", "value": 200}
 
         fake_factory = DummyFakeFactory()
         fake_factory.generate = fake_generate
+        dummy_emul_id = DummyEmulationID("emul_id")
         start_time = time.time()
         self.use_case._run_emulation_task(
-            "emul_id",
+            dummy_emul_id,
             dummy_producer,
             "dummy_topic",
             fake_factory,
@@ -248,7 +274,6 @@ class TestStartEmulatorUseCase(unittest.TestCase):
         )
         elapsed = time.time() - start_time
         self.assertTrue(dummy_producer.flush_called)
-        # Since timeout is 0, the elapsed time should be very short.
         self.assertLess(elapsed, 0.5)
 
 

@@ -10,7 +10,10 @@ class EmulationScheduledDTO:
 
     id: EmulationID
     emulator_sync: str
+    format_type: str
+    sync_type: str
     emulation_domain: str
+    max_chunk_size: int
     timeout: int
 
 
@@ -18,7 +21,11 @@ class StartEmulatorDTO(BaseModel):
     """DTO for starting an emulation."""
 
     emulator_sync: str
+    format_type: str
+    sync_type: str
+    max_chunk_size: int
     emulation_domain: str
+    max_chunk_size: int
     timeout: int
 
 
