@@ -11,6 +11,7 @@ from fake_factory.fraud.transaction_factory import TransactionFakeFactory
 from fake_factory.fraud.user_profile_factory import UserProfileFactory
 from fastapi import BackgroundTasks
 from logger.log import get_logger_from_env
+from mem_repository.in_memory_repository import InMemoryRepository
 from producers.kafka.producer import KafkaProducerStrategy
 from storage.minio.storage import MinioStorageClient
 from value_objects.emulator_id import EmulationID
@@ -18,7 +19,25 @@ from value_objects.emulator_id import EmulationID
 logger = get_logger_from_env(__name__)
 
 
-# ===== Abstract Producer Interface =====
+def convert_to_csv(dict_list) -> str:
+    """
+    Converts a list of dictionaries to a CSV string.
+    Each dictionary represents a row, and the keys are the column headers.
+    Args:
+        dict_list (list): List of dictionaries to convert.
+    Returns:
+        str: CSV formatted string.
+    """
+    if not dict_list:
+        return ""
+    headers = list(dict_list[0].keys())
+    lines = [",".join(headers)]
+    for data in dict_list:
+        row = ",".join(str(data.get(key, "")) for key in headers)
+        lines.append(row)
+    return "\n".join(lines)
+
+
 class SyncProducer(ABC):
     """Abstract base class for synchronous producers."""
 
@@ -38,7 +57,6 @@ class SyncProducer(ABC):
         pass
 
 
-# ===== Kafka Producer Implementation =====
 class KafkaFactorySyncProducerWrapper(SyncProducer):
     """Synchronous Kafka producer wrapper implementation."""
 
@@ -93,17 +111,28 @@ class KafkaFactorySyncProducerWrapper(SyncProducer):
         self.kafka_producer.flush()
 
 
-# ===== Minio Producer Implementation =====
 class MinioFactorySyncProducerWrapper(SyncProducer):
     """Synchronous Minio producer wrapper implementation.
 
     This implementation uses a MinioClient to upload messages as individual objects.
     """
 
-    def __init__(self, minio_client: MinioStorageClient):
+    def __init__(
+        self,
+        minio_client: MinioStorageClient,
+        sync_type: str,
+        format_type: str,
+        max_chunk_size: int = None,
+    ):
         self.minio_client = minio_client
         self.bucket = None
+        self.sync_type = sync_type.lower()
+        self.format_type = format_type.lower()
+        self.max_chunk_size = max_chunk_size
         self.lock = threading.Lock()
+        if self.sync_type in ("grouped", "chunked"):
+            self.buffer = []
+            self.current_chunk_size = 0
 
     def setup_resource(self, bucket_name: str) -> None:
         """
@@ -122,26 +151,101 @@ class MinioFactorySyncProducerWrapper(SyncProducer):
 
     def produce(self, topic: str, key: str, value: dict[str, Any]) -> None:
         """
-        Uploads a message as an object to the Minio bucket.
-
+        Produces a message to the Minio bucket.
         Args:
-            topic (str): Not used for Minio; bucket name is used instead.
-            key (str): A key used to generate a unique object name.
+            topic (str): The Minio bucket name (used as the "topic").
+            key (str): The key of the message.
             value (dict[str, Any]): The message payload.
         """
-        message_bytes = json.dumps(value).encode("utf-8")
-        # Generate a unique object name (e.g., using key and current time)
-        object_name = f"{key}_{int(time.time() * 1000)}.json"
-        with self.lock:
-            self.minio_client.upload_bytes(self.bucket, object_name, message_bytes)
+        if self.sync_type in ("grouped", "chunked"):
+            serialized_value = json.dumps(value)
+            message_bytes = serialized_value.encode("utf-8")
+            message_size = len(message_bytes)
+
+            with self.lock:
+                self.buffer.append(value)
+                if self.sync_type == "chunked":
+                    self.current_chunk_size += message_size
+                    if (
+                        self.max_chunk_size is not None
+                        and self.current_chunk_size >= self.max_chunk_size
+                    ):
+                        self._flush_current_chunk()
+        else:
+            message_bytes = json.dumps(value).encode("utf-8")
+            object_name = f"{key}_{int(time.time() * 1000)}.{self.format_type}"
+            with self.lock:
+                self.minio_client.upload_bytes(self.bucket, object_name, message_bytes)
             logger.info(f"Uploaded object {object_name} to bucket {self.bucket}")
 
+    def _flush_current_chunk(self) -> None:
+        """Flushes the current chunk of messages to Minio."""
+        if not self.buffer:
+            return
+
+        if self.format_type == "json":
+            aggregate_data = json.dumps(self.buffer)
+        elif self.format_type == "csv":
+            aggregate_data = convert_to_csv(self.buffer)
+        else:
+            aggregate_data = json.dumps(self.buffer)
+
+        object_name = f"aggregated_{int(time.time() * 1000)}.{self.format_type}"
+        self.minio_client.upload_bytes(
+            self.bucket, object_name, aggregate_data.encode("utf-8")
+        )
+        logger.info(
+            f"Chunk flushed: {object_name} with size {self.current_chunk_size} bytes"
+        )
+        self.buffer.clear()
+        self.current_chunk_size = 0
+
     def flush(self) -> None:
-        """Flush is a no-op for the Minio producer."""
-        pass
+        """Flushes the producer, ensuring all messages are sent."""
+        if self.sync_type in ("grouped", "chunked"):
+            with self.lock:
+                self._flush_current_chunk()
 
 
-# ===== Start Emulator Use Case =====
+class ProducerWrapperFactory:
+    """Factory class for creating producer wrappers based on the sync type."""
+
+    def __init__(
+        self,
+        kafka_producer: KafkaProducerStrategy,
+        kafka_brokers: str,
+        minio_client: MinioStorageClient,
+    ):
+        self.kafka_producer = kafka_producer
+        self.kafka_brokers = kafka_brokers
+        self.minio_client = minio_client
+
+    def create_producer_wrapper(self, dto: StartEmulatorDTO) -> SyncProducer:
+        """
+        Creates a producer wrapper based on the sync type specified in the DTO.
+        Args:
+            dto (StartEmulatorDTO): The DTO containing emulator parameters.
+        Returns:
+            SyncProducer: An instance of the appropriate producer wrapper.
+        Raises:
+            ValueError: If the sync type is not supported.
+        """
+        if dto.emulator_sync == "minio":
+            return MinioFactorySyncProducerWrapper(
+                minio_client=self.minio_client,
+                sync_type=dto.sync_type,
+                format_type=dto.format_type,
+                max_chunk_size=dto.max_chunk_size,
+            )
+        elif dto.emulator_sync == "kafka":
+            return KafkaFactorySyncProducerWrapper(
+                self.kafka_producer,
+                self.kafka_brokers,
+            )
+        else:
+            raise ValueError(f"Unsupported emulator sync type: {dto.emulator_sync}")
+
+
 class StartEmulatorUseCase:
     """Use case for starting the data emulator with flexible sync strategies."""
 
@@ -150,7 +254,9 @@ class StartEmulatorUseCase:
         kafka_producer: KafkaProducerStrategy,
         kafka_brokers: str,
         minio_client: MinioStorageClient,
+        repository: InMemoryRepository,
     ):
+        self.repository = repository
         self.topics_mapping = {
             "transaction": "transactions",
             "user-profile": "user-profiles",
@@ -162,11 +268,11 @@ class StartEmulatorUseCase:
             "user-profile": UserProfileFactory,
             "device-log": DeviceLogFactory,
         }
-        # Map sync types to their corresponding producer wrapper classes.
-        self.producer_wrapper_mapping = {
-            "kafka": KafkaFactorySyncProducerWrapper(kafka_producer, kafka_brokers),
-            "minio": MinioFactorySyncProducerWrapper(minio_client),
-        }
+        self.producer_wrapper_factory = ProducerWrapperFactory(
+            kafka_producer=kafka_producer,
+            kafka_brokers=kafka_brokers,
+            minio_client=minio_client,
+        )
 
     def execute(
         self, dto: StartEmulatorDTO, background_tasks: BackgroundTasks, num_threads: int
@@ -186,16 +292,12 @@ class StartEmulatorUseCase:
             ValueError: If the sync type or domain is not supported.
         """
         emulation_id = EmulationID.generate()
-        sync_type = dto.emulator_sync.lower()
-
-        # Retrieve the producer wrapper based on the sync type.
-        producer_wrapper = self.producer_wrapper_mapping.get(sync_type)
-        if producer_wrapper is None:
-            raise ValueError(f"Producer wrapper not found for sync type: {sync_type}")
+        self.repository.create_status(emulation_id.value, "processing")
 
         # Determine the target topic (or bucket name) based on the emulation domain.
         domain = dto.emulation_domain.lower()
         topic = self.topics_mapping.get(domain, self.topics_mapping["default"])
+        producer_wrapper = self.producer_wrapper_factory.create_producer_wrapper(dto)
         producer_wrapper.setup_resource(topic)
 
         # Retrieve the appropriate fake factory for the specified domain.
@@ -219,6 +321,9 @@ class StartEmulatorUseCase:
             id=emulation_id,
             emulator_sync=dto.emulator_sync,
             emulation_domain=dto.emulation_domain,
+            format_type=dto.format_type,
+            sync_type=dto.sync_type,
+            max_chunk_size=dto.max_chunk_size,
             timeout=dto.timeout,
         )
 
@@ -242,13 +347,14 @@ class StartEmulatorUseCase:
             stop_event (threading.Event): Event to signal when to stop production.
             factory(Any): The fake data factory.
         """
+        self.repository.update_thread_status(emulation_id.value, thread_id, "started")
         while not stop_event.is_set():
             fake_data = factory.generate()
             if fake_data is None:
                 logger.info(f"Thread {thread_id} - No more data to process")
                 break
             message_payload = {
-                "emulation_id": str(emulation_id),
+                "emulation_id": str(emulation_id.value),
                 "timestamp": time.time(),
                 "data": fake_data,
             }
@@ -258,6 +364,10 @@ class StartEmulatorUseCase:
                 logger.info(f"Thread {thread_id} - Produced message: {message_payload}")
             except Exception as e:
                 logger.error(f"Failed to produce message: {e}")
+                self.repository.update_thread_status(
+                    emulation_id.value, thread_id, "error"
+                )
+        self.repository.update_thread_status(emulation_id.value, thread_id, "finished")
 
     def produce_data_in_parallel(
         self,
@@ -324,3 +434,4 @@ class StartEmulatorUseCase:
         timer.cancel()
         producer.flush()
         logger.info("Emulation finished")
+        self.repository.update_status(emulation_id.value, "completed")

@@ -76,6 +76,28 @@ The library defines an APIRouter under the `/emulator` prefix with one key endpo
   }
   ```
 
+```http
+GET /emulator/<emulation_id>/status HTTP/1.1
+```
+
+- **Example Response:**
+
+```json
+{
+  "id": "694a9cee-c9e9-4999-9a72-77e5817ca0a3",
+  "status": {
+    "global_status": "completed",
+    "threads": {
+      "0": "finished",
+      "1": "finished",
+      "2": "finished",
+      "3": "finished",
+      "4": "finished"
+    }
+  }
+}
+```
+
 ### Integration Example
 
 Here’s a sample integration that uses the Controllers library within a FastAPI application:
