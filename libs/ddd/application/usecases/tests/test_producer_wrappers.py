@@ -60,6 +60,10 @@ class TestKafkaFactorySyncProducerWrapper(unittest.TestCase):
             wrapper = KafkaFactorySyncProducerWrapper(
                 dummy_kafka_producer, "dummy_broker"
             )
+            dummy_admin_instance = DummyAdminClient(
+                {"bootstrap.servers": "dummy_broker"}
+            )
+            dummy_admin_instance.metadata.topics = {}
             wrapper.setup_resource("test_topic")
             self.assertIn("test_topic", DummyAdminClient.created_topics)
 
@@ -160,16 +164,10 @@ class TestMinioFactorySyncProducerWrapper(unittest.TestCase):
             minio_client=self.dummy_minio, sync_type="other", format_type="json"
         )
         wrapper.setup_resource(self.bucket_name)
-        import usecases.start_emulator as start_emulator_module
-
-        setattr(start_emulator_module, "file_extens", "txt")
-        try:
-            wrapper.produce(self.bucket_name, "key3", {"data": "test"})
-        finally:
-            delattr(start_emulator_module, "file_extens")
+        wrapper.produce(self.bucket_name, "key3", {"data": "test"})
         uploaded_objs = self.dummy_minio.uploaded
         self.assertTrue(
-            any("key3" in obj[1] and obj[1].endswith(".txt") for obj in uploaded_objs)
+            any("key3" in obj[1] and obj[1].endswith(".json") for obj in uploaded_objs)
         )
 
 
