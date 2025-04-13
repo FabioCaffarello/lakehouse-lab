@@ -20,6 +20,7 @@ jobs:
           aws-region: us-east-1
       - name: "Checkout Code"
         uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
       - name: "Terraform Init"
         working-directory: deploy/iac/tf-aws
         run: terraform init -backend-config="bucket=${{ secrets.AWS_BUCKET_NAME }}" -backend-config="key=${{ secrets.AWS_BUCKET_FILE }}"
