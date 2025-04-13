@@ -1,9 +1,3 @@
-variable "aws_profile" {
-  type     = string
-  default  = "default"
-  nullable = false
-}
-
 variable "aws_region" {
   description = "The AWS region to deploy the resources"
   type        = string
