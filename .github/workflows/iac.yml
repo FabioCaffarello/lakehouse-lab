@@ -34,8 +34,8 @@ jobs:
         id: validate
         working-directory: deploy/iac/tf-aws
         run: terraform validate
-      - name: Terraform Plan
-        id: plan
+      - name: Terraform Apply
+        id: apply
         working-directory: deploy/iac/tf-aws
         run: terraform plan -no-color -input=false
         continue-on-error: true
