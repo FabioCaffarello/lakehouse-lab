@@ -1,8 +1,8 @@
 {
-  "name": "services-data-emulator",
+  "name": "services-airflow-app",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
-  "sourceRoot": "./services/data-emulator/emulator",
+  "sourceRoot": "./services/airflow-app/airflow_app",
   "targets": {
     "lock": {
       "executor": "@nxlv/python:lock",
@@ -22,21 +22,6 @@
       "executor": "@nxlv/python:update",
       "options": {}
     },
-    "image": {
-      "executor": "nx:run-commands",
-      "dependsOn": ["build"],
-      "options": {
-        "command": "docker build -t fabiocaffarello/data-emulator:latest -f ./Dockerfile .",
-        "cwd": "{projectRoot}"
-      }
-    },
-    "swag-doc": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "npx --yes snippet-enricher-cli@0.0.8 --input=docs/openapi/swagger.yaml > docs/openapi/openapi.json",
-        "cwd": "{projectRoot}"
-      }
-    },
     "remove": {
       "executor": "@nxlv/python:remove",
       "options": {}
@@ -46,26 +31,17 @@
       "outputs": ["{projectRoot}/dist"],
       "options": {
         "outputPath": "{projectRoot}/dist",
-        "publish": true,
+        "publish": false,
         "lockedVersions": true,
         "bundleLocalDependencies": true
       },
       "cache": true
     },
-    "build-tmp": {
-      "executor": "nx:run-commands",
-      "outputs": ["{projectRoot}/dist"],
-      "options": {
-        "cwd": "{projectRoot}",
-        "command": ["poetry build"],
-        "parallel": false
-      }
-    },
     "lint": {
       "executor": "@nxlv/python:ruff-check",
       "outputs": [],
       "options": {
-        "lintFilePatterns": ["emulator", "tests"]
+        "lintFilePatterns": ["airflow_app"]
       },
       "cache": true
     },
@@ -73,7 +49,7 @@
       "executor": "@nxlv/python:ruff-format",
       "outputs": [],
       "options": {
-        "filePatterns": ["emulator", "tests"]
+        "filePatterns": ["airflow_app", "tests"]
       },
       "cache": true
     },
@@ -87,10 +63,12 @@
         "debug": false
       }
     },
-    "nx-release-publish": {
-      "executor": "@nxlv/python:publish",
-      "options": {},
-      "outputs": []
+    "image": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "docker build -t fabiocaffarello/airflow-app:latest -f ./Dockerfile .",
+        "cwd": "{projectRoot}"
+      }
     }
   },
   "tags": ["lang:python"],

@@ -1,5 +1,4 @@
 aws_region                                 = "us-east-1"
-aws_profile                                = "default"
 aws_vpc_name                               = "flc-lakehouse-lab"
 aws_vpc_cidr                               = "10.0.0.0/16"
 aws_vpc_azs                                = ["us-east-1a", "us-east-1b", "us-east-1c"]

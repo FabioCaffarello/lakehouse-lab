@@ -1,0 +1,133 @@
+swagger: "2.0"
+info:
+  title: Emulator Service REST API
+  description: API for the Emulator Service.
+  version: "1.0.0"
+host: "localhost:8000"
+basePath: "/"
+schemes:
+  - "http"
+paths:
+  /emulator/:
+    post:
+      tags:
+        - Emulator
+      summary: Start a new emulation
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: "#/definitions/StartEmulatorDTO"
+      responses:
+        201:
+          description: Emulation scheduled successfully
+          schema:
+            $ref: "#/definitions/EmulationScheduledDTO"
+        400:
+          description: Bad Request
+          schema:
+            type: object
+            properties:
+              detail:
+                type: string
+  /emulator/{emulation_id}/status:
+    get:
+      tags:
+        - Emulator
+      summary: Get the status of an emulation
+      parameters:
+        - name: emulation_id
+          in: path
+          required: true
+          type: string
+          description: ID of the emulation
+      responses:
+        200:
+          description: Successfully retrieved emulation status
+          schema:
+            $ref: "#/definitions/EmulationStatusDTO"
+        404:
+          description: Emulation not found
+          schema:
+            type: object
+            properties:
+              detail:
+                type: string
+        500:
+          description: Internal server error
+          schema:
+            type: object
+            properties:
+              detail:
+                type: string
+definitions:
+  StartEmulatorDTO:
+    type: object
+    required:
+      - emulator_sync
+      - format_type
+      - sync_type
+      - max_chunk_size
+      - emulation_domain
+      - timeout
+    properties:
+      emulator_sync:
+        type: string
+      format_type:
+        type: string
+      sync_type:
+        type: string
+      max_chunk_size:
+        type: integer
+      emulation_domain:
+        type: string
+      timeout:
+        type: integer
+  EmulationScheduledDTO:
+    type: object
+    required:
+      - id
+      - emulator_sync
+      - format_type
+      - sync_type
+      - emulation_domain
+      - max_chunk_size
+      - timeout
+    properties:
+      id:
+        type: string
+      emulator_sync:
+        type: string
+      format_type:
+        type: string
+      sync_type:
+        type: string
+      emulation_domain:
+        type: string
+      max_chunk_size:
+        type: integer
+      timeout:
+        type: integer
+  EmulationStatusDTO:
+    type: object
+    required:
+      - id
+      - status
+    properties:
+      id:
+        type: string
+      status:
+        $ref: "#/definitions/StatusDTO"
+  StatusDTO:
+    type: object
+    required:
+      - global_status
+      - threads
+    properties:
+      global_status:
+        type: string
+      threads:
+        type: object
+        additionalProperties:
+          type: string

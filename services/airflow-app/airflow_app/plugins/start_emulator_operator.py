@@ -10,6 +10,14 @@ class StartEmulatorOperator(BaseOperator):
     Custom Airflow operator to start the emulator.
     This operator is responsible for starting the emulator and
     managing its lifecycle.
+    Args:
+        endpoint (str): The endpoint of the emulator.
+        emulator_sync (str): The synchronization type for the emulator.
+        emulation_domain (str): The domain to be emulated.
+        format_type (str): The format type of the data.
+        sync_type (str): The synchronization type.
+        max_chunk_size (int): The maximum chunk size for data processing.
+        timeout (int): The timeout for the request in seconds.
     """
 
     @apply_defaults
@@ -36,6 +44,15 @@ class StartEmulatorOperator(BaseOperator):
         self.logger = logging.getLogger(__name__)
 
     def execute(self, context):
+        """
+        Execute the operator to start the emulator.
+        This method sends a POST request to the emulator endpoint with the
+        specified parameters and handles the response.
+        Args:
+            context: The Airflow context.
+        Raises:
+            ValueError: If the emulator fails to start or if the response is invalid.
+        """
         payload = {
             "emulator_sync": self.emulator_sync,
             "emulation_domain": self.emulation_domain,
