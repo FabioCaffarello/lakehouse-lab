@@ -1,0 +1,51 @@
+{
+  "name": "nx-compose",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "tools/nx-compose/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/tools/nx-compose",
+        "main": "tools/nx-compose/src/index.ts",
+        "tsConfig": "tools/nx-compose/tsconfig.lib.json",
+        "assets": [
+          "tools/nx-compose/*.md",
+          {
+            "input": "./tools/nx-compose/src",
+            "glob": "**/!(*.ts)",
+            "output": "./src"
+          },
+          {
+            "input": "./tools/nx-compose/src",
+            "glob": "**/*.d.ts",
+            "output": "./src"
+          },
+          {
+            "input": "./tools/nx-compose",
+            "glob": "generators.json",
+            "output": "."
+          },
+          {
+            "input": "./tools/nx-compose",
+            "glob": "executors.json",
+            "output": "."
+          }
+        ]
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "tools/nx-compose/jest.config.ts"
+      }
+    }
+  }
+}
