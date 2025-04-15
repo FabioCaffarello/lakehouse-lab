@@ -69,6 +69,7 @@ lint-docstrings:
 build-docs:
 	@echo "Building documentation..."
 	@npx nx graph --file=docs/dependency-graph/index.html
+	@npx nx run-many --target=swag-doc --all
 	@docker run -d -p 8080:8080 plantuml/plantuml-server:jetty
 
 lint-all:
