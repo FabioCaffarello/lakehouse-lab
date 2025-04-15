@@ -34,15 +34,15 @@ jobs:
         id: validate
         working-directory: deploy/iac/tf-aws
         run: terraform validate
-      - name: Terraform Apply
-        id: apply
+      - name: Terraform Plan
+        id: plan
         working-directory: deploy/iac/tf-aws
-        run: terraform apply -auto-approve
-    # - name: Terraform Plan
-    #   id: plan
-    #   working-directory: deploy/iac/tf-aws
-    #   run: terraform plan -no-color -input=false
-    #   continue-on-error: true
+        run: terraform plan -no-color -input=false
+        continue-on-error: true
+      # - name: Terraform Apply
+      #   id: apply
+      #   working-directory: deploy/iac/tf-aws
+      #   run: terraform apply -auto-approve
     # - uses: actions/github-script@v7
     #   if: github.event_name == 'pull_request'
     #   env:
