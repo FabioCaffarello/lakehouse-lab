@@ -20,11 +20,14 @@ start = PythonOperator(
     dag=dag,
 )
 
-start_emulator_user_frofile = StartEmulatorOperator(
+start_emulator_user_profile = StartEmulatorOperator(
     task_id="start_emulator_user_profile_task",
     endpoint="http://data-emulator:8000/emulator/",
     emulator_sync="minio",
     emulation_domain="user-profile",
+    format_type="json",
+    sync_type="grouped",
+    max_chunk_size=1024,
     timeout=20,
     dag=dag,
 )
@@ -77,7 +80,7 @@ end = PythonOperator(
 
 (
     start
-    >> start_emulator_user_frofile
+    >> start_emulator_user_profile
     >> status_emulation_user_profile
     >> bronze_user_profile_spark_job
     >> silver_user_profile_spark_job
