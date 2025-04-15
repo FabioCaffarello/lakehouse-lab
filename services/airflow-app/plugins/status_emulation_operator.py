@@ -7,6 +7,16 @@ from airflow.utils.decorators import apply_defaults
 
 
 class StatusEmulationOperator(BaseOperator):
+    """
+    Custom Airflow operator to check the status of an emulator.
+    This operator checks the status of an emulator by sending a GET request
+    to the specified endpoint and handling the response.
+    Args:
+        endpoint (str): The endpoint of the emulator.
+        prev_task_id (str): The task ID of the previous task to pull the emulation ID from.
+        poll_interval (int): The interval in seconds to poll the status.
+        max_retries (int): The maximum number of retries for status checking.
+    """
 
     @apply_defaults
     def __init__(
@@ -49,6 +59,14 @@ class StatusEmulationOperator(BaseOperator):
         return response.json()
 
     def execute(self, context):
+        """
+        Execute the operator to check the status of the emulator.
+        This method retrieves the emulation ID from XCom and checks its status.
+        Args:
+            context: The Airflow context.
+        Raises:
+            ValueError: If the emulation ID is not found in XCom.
+        """
         try:
             emulation_id = context["ti"].xcom_pull(task_ids=self.prev_task_id)
             if emulation_id is None:
