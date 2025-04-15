@@ -30,6 +30,13 @@
         "cwd": "{projectRoot}"
       }
     },
+    "swag-doc": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx --yes snippet-enricher-cli@0.0.8 --input=docs/openapi/swagger.yaml > docs/openapi/openapi.json",
+        "cwd": "{projectRoot}"
+      }
+    },
     "remove": {
       "executor": "@nxlv/python:remove",
       "options": {}
