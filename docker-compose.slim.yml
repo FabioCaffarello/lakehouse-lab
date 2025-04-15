@@ -22,10 +22,10 @@ x-airflow-common: &airflow-common
   env_file:
     - ./airflow.env
   volumes:
-    - ./services/airflow-app/jobs:/opt/airflow/jobs
-    - ./services/airflow-app/dags:/opt/airflow/dags
-    - ./services/airflow-app/logs:/opt/airflow/logs
-    - ./services/airflow-app/plugins:/opt/airflow/plugins
+    - ./services/airflow-app/airflow_app/jobs:/opt/airflow/jobs
+    - ./services/airflow-app/airflow_app/dags:/opt/airflow/dags
+    - ./services/airflow-app/airflow_app/logs:/opt/airflow/logs
+    - ./services/airflow-app/airflow_app/plugins:/opt/airflow/plugins
   depends_on:
     - postgres
   networks:
@@ -35,7 +35,7 @@ x-spark-common: &spark-common
     context: ./deploy/docker/spark/
     dockerfile: Dockerfile
   volumes:
-    - ./services/airflow-app/jobs:/opt/bitnami/spark/jobs
+    - ./services/airflow-app/airflow_app/jobs:/opt/bitnami/spark/jobs
     - ./.artefacts/spark/local-cluster/mnt/spark-checkpoints:/tmp/spark-checkpoints
     - ./.artefacts/spark/local-cluster/mnt/spark-state:/tmp/spark-state
   networks:
@@ -140,17 +140,6 @@ services:
 
 
 
-
-
-
-
-
-
-
-
-
-
-
           brokers: [kafka-broker-1:19092,kafka-broker-2:19092]
           schemaRegistry:
             enabled: false
@@ -160,15 +149,9 @@ services:
 
 
 
-
-
-          adminApi:
             enabled: false
             urls: ["http://kafka_broker:9644"]
         connect:
-
-
-
 
 
 
@@ -230,27 +213,27 @@ services:
       - lakehouse-lab-slim-network
     ports:
       - 19120:19120
-  # dremio:
-  #   image: dremio/dremio-oss
-  #   container_name: dremio
-  #   ports:
-  #     - 9047:9047
-  #     - 31010:31010
-  #     - 32010:32010
-  #     - 45678:45678
-  #   environment:
-  #     - DREMIO_JAVA_SERVER_EXTRA_OPTS=-Dpaths.dist=file:///opt/dremio/data/dist
-  #   depends_on:
-  #     - mc
-  #   networks:
-  #     - lakehouse-lab-slim-network
-  # superset:
-  #   image: alexmerced/dremio-superset
-  #   container_name: superset
-  #   networks:
-  #     - lakehouse-lab-slim-network
-  #   ports:
-  #     - 8088:8088
+  dremio:
+    image: dremio/dremio-oss
+    container_name: dremio
+    ports:
+      - 9047:9047
+      - 31010:31010
+      - 32010:32010
+      - 45678:45678
+    environment:
+      - DREMIO_JAVA_SERVER_EXTRA_OPTS=-Dpaths.dist=file:///opt/dremio/data/dist
+    depends_on:
+      - mc
+    networks:
+      - lakehouse-lab-slim-network
+  superset:
+    image: alexmerced/dremio-superset
+    container_name: superset
+    networks:
+      - lakehouse-lab-slim-network
+    ports:
+      - 8088:8088
   postgres:
     image: postgres:14.0
     container_name: postgres

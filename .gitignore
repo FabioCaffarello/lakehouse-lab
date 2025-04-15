@@ -2,7 +2,7 @@
 
 TODO
 .volumes/kafka/logs/
-services/airflow-app/logs/
+services/airflow-app/**/logs/
 # Python-generated files
 __pycache__/
 .cache/
