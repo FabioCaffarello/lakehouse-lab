@@ -74,7 +74,6 @@ build-docs:
 
 lint-all:
 	npx nx run-many --target=lint --all
-	npx nx run-many --target=fmt --all
 
 lint-affected:
 	npx nx affected -t lint

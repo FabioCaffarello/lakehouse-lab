@@ -41,7 +41,7 @@
       "executor": "@nxlv/python:ruff-check",
       "outputs": [],
       "options": {
-        "lintFilePatterns": ["dags", "jobs", "plugins"]
+        "lintFilePatterns": ["airflow_app"]
       },
       "cache": true
     },
