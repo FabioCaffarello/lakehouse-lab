@@ -18,9 +18,7 @@ x-kafka-controller-env: &kafka-controller-env
   KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka-controller-1:9093,2@kafka-controller-2:9093
   KAFKA_CLUSTER_ID: 5L6g3nShT-eMCtK--X86sw
 x-airflow-common: &airflow-common
-  build:
-    context: ./deploy/docker/airflow/
-    dockerfile: Dockerfile
+  image: fabiocaffarello/airflow-app:latest
   env_file:
     - ./airflow.env
   volumes:
@@ -153,61 +151,6 @@ services:
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
           brokers: [kafka-broker-1:19092,kafka-broker-2:19092]
           schemaRegistry:
             enabled: false
@@ -219,140 +162,10 @@ services:
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
           adminApi:
             enabled: false
             urls: ["http://kafka_broker:9644"]
         connect:
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -404,7 +217,7 @@ services:
     env_file:
       - .env.slim
     entrypoint: >
-      /bin/sh -c " echo 'Waiting for MinIO to start...' && /bin/sleep 10 && mc alias set minio http://minio:9000 $$AWS_ACCESS_KEY_ID $$AWS_SECRET_ACCESS_KEY && mc mb minio/bronze && mc mb minio/silver && echo 'Buckets created.'"
+      /bin/sh -c " echo 'Waiting for MinIO to start...' && /bin/sleep 10 && mc alias set minio http://minio:9000 $$AWS_ACCESS_KEY_ID $$AWS_SECRET_ACCESS_KEY && mc mb minio/silver && echo 'Buckets created.'"
 
     volumes:
       - ./scripts/wait-for-it.sh:/tmp/wait-for-it.sh
@@ -417,27 +230,27 @@ services:
       - lakehouse-lab-slim-network
     ports:
       - 19120:19120
-  dremio:
-    image: dremio/dremio-oss
-    container_name: dremio
-    ports:
-      - 9047:9047
-      - 31010:31010
-      - 32010:32010
-      - 45678:45678
-    environment:
-      - DREMIO_JAVA_SERVER_EXTRA_OPTS=-Dpaths.dist=file:///opt/dremio/data/dist
-    depends_on:
-      - mc
-    networks:
-      - lakehouse-lab-slim-network
-  superset:
-    image: alexmerced/dremio-superset
-    container_name: superset
-    networks:
-      - lakehouse-lab-slim-network
-    ports:
-      - 8088:8088
+  # dremio:
+  #   image: dremio/dremio-oss
+  #   container_name: dremio
+  #   ports:
+  #     - 9047:9047
+  #     - 31010:31010
+  #     - 32010:32010
+  #     - 45678:45678
+  #   environment:
+  #     - DREMIO_JAVA_SERVER_EXTRA_OPTS=-Dpaths.dist=file:///opt/dremio/data/dist
+  #   depends_on:
+  #     - mc
+  #   networks:
+  #     - lakehouse-lab-slim-network
+  # superset:
+  #   image: alexmerced/dremio-superset
+  #   container_name: superset
+  #   networks:
+  #     - lakehouse-lab-slim-network
+  #   ports:
+  #     - 8088:8088
   postgres:
     image: postgres:14.0
     container_name: postgres
