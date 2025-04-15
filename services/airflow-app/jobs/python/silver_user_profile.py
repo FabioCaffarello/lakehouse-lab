@@ -35,6 +35,7 @@ def create_spark_connection():
             .config("spark.hadoop.fs.s3a.secret.key", MINIO_SECRET_KEY)
             .config("spark.hadoop.fs.s3a.path.style.access", "true")
             .config("spark.hadoop.fs.s3a.connection.ssl.enabled", "false")
+            .config("spark.sql.legacy.timeParserPolicy", "LEGACY")
             .getOrCreate()
         )
         spark_conn.sparkContext.setLogLevel("ERROR")
