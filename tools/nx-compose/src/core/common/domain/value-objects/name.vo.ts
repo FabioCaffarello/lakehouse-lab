@@ -41,4 +41,8 @@ export class Name extends ValueObject {
   toJSON(): string {
     return this._value;
   }
+
+  toLowerCase(): string {
+    return this._value.toLowerCase();
+  }
 }

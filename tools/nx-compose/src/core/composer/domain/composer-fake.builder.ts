@@ -26,6 +26,7 @@ export class ComposerFakeBuilder<TBuild = any> {
   private _sharedConfigs: PropOrFactory<SharedConfig[]> = () => [
     SharedConfigFakeBuilder.aSharedConfig().build(),
   ];
+  private _created_at: PropOrFactory<Date> | undefined = undefined;
 
   private chance = Chance();
   private countObjs;
@@ -74,6 +75,11 @@ export class ComposerFakeBuilder<TBuild = any> {
 
   withSharedConfigs(value: PropOrFactory<SharedConfig[]>) {
     this._sharedConfigs = value;
+    return this;
+  }
+
+  withCreatedAt(value: PropOrFactory<Date>) {
+    this._created_at = value;
     return this;
   }
 

@@ -26,4 +26,14 @@ describe('Name Value Object', () => {
       'Name must be less than 256 characters'
     );
   });
+
+  test('should convert name to JSON', () => {
+    const name = new Name('json-name');
+    expect(name.toJSON()).toBe('json-name');
+  });
+
+  test('should convert name to lowercase', () => {
+    const name = new Name('UPPERCASE');
+    expect(name.toLowerCase()).toBe('uppercase');
+  });
 });

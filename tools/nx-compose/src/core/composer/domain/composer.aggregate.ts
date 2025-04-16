@@ -6,6 +6,7 @@ import { ComposerValidatorFactory } from './composer.validator';
 import { SharedConfig } from '../../shared-config/domain/shared-config.aggregate';
 import { Stack } from '../../stack/domain/stack.aggregate';
 import { Service } from '../../service/domain/service.aggregate';
+import { ComposerFakeBuilder } from './composer-fake.builder';
 
 export class ComposerId extends Uuid {}
 
@@ -90,6 +91,10 @@ export class Composer extends AggregateRoot {
 
   get entity_id(): ValueObject {
     return this.composer_id;
+  }
+
+  static fake() {
+    return ComposerFakeBuilder;
   }
 
   toJSON() {
