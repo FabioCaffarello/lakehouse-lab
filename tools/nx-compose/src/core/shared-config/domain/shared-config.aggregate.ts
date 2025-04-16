@@ -1,15 +1,17 @@
 import { AggregateRoot } from '../../common/domain/aggregate-root';
 import { ValueObject } from '../../common/domain/value-object';
 import { Uuid } from '../../common/domain/value-objects/uuid.vo';
-import { SharedConfigFakeBuilder } from './shared-config-fake.builder';
+import { Name } from '../../common/domain/value-objects/name.vo';
+import { Notification } from '../../common/domain/validators/notification';
 import { SharedConfigValidatorFactory } from './shared-config.validator';
+import { SharedConfigFakeBuilder } from './shared-config-fake.builder';
 
 export class SharedConfigId extends Uuid {}
 
 export type SharedConfigProps = {
   shared_config_id?: SharedConfigId;
-  name: string;
-  templates: string[]; // Must have at least one YAML template
+  name: Name;
+  templates: string[];
   environment?: Record<string, string>;
   volumes?: string[];
   networks?: string[];
@@ -17,22 +19,13 @@ export type SharedConfigProps = {
   created_at?: Date;
 };
 
-export type SharedConfigCreateCommand = {
-  name: string;
-  templates: string[]; // Must have at least one YAML template
-  environment?: Record<string, string>;
-  volumes?: string[];
-  networks?: string[];
-  appliesTo: string[];
-};
-
 export class SharedConfig extends AggregateRoot {
   shared_config_id: SharedConfigId;
-  name: string;
-  templates: string[]; // Must have at least one YAML template
-  environment?: Record<string, string>;
-  volumes?: string[];
-  networks?: string[];
+  name: Name;
+  templates: string[];
+  environment: Record<string, string>;
+  volumes: string[];
+  networks: string[];
   appliesTo: string[];
   created_at: Date;
 
@@ -52,7 +45,7 @@ export class SharedConfig extends AggregateRoot {
     return this.shared_config_id;
   }
 
-  static create(props: SharedConfigCreateCommand): SharedConfig {
+  static create(props: SharedConfigProps): SharedConfig {
     const sharedConfig = new SharedConfig(props);
     sharedConfig.validate([
       'name',
@@ -65,7 +58,7 @@ export class SharedConfig extends AggregateRoot {
     return sharedConfig;
   }
 
-  changeName(name: string): void {
+  changeName(name: Name): void {
     this.name = name;
     this.validate(['name']);
   }
@@ -113,7 +106,7 @@ export class SharedConfig extends AggregateRoot {
   toJSON() {
     return {
       shared_config_id: this.shared_config_id.id,
-      name: this.name,
+      name: this.name.value,
       templates: this.templates,
       environment: this.environment,
       volumes: this.volumes,

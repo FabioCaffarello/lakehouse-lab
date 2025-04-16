@@ -1,6 +1,7 @@
 import { AggregateRoot } from '../../common/domain/aggregate-root';
 import { ValueObject } from '../../common/domain/value-object';
 import { Uuid } from '../../common/domain/value-objects/uuid.vo';
+import { Name } from '../../common/domain/value-objects/name.vo';
 import { ComposerValidatorFactory } from './composer.validator';
 import { SharedConfig } from '../../shared-config/domain/shared-config.aggregate';
 import { Stack } from '../../stack/domain/stack.aggregate';
@@ -10,7 +11,7 @@ export class ComposerId extends Uuid {}
 
 export type ComposerProps = {
   composer_id?: ComposerId;
-  name: string;
+  name: Name;
   stacks?: Stack[];
   services?: Service[];
   environment?: Record<string, string>;
@@ -22,7 +23,7 @@ export type ComposerProps = {
 
 export class Composer extends AggregateRoot {
   composer_id: ComposerId;
-  name: string;
+  name: Name;
   stacks: Stack[];
   services: Service[];
   environment: Record<string, string>;
@@ -48,7 +49,7 @@ export class Composer extends AggregateRoot {
 
   private applyComposerSharedConfigs(): void {
     for (const config of this.sharedConfigs) {
-      if (config.appliesTo.includes(this.name)) {
+      if (config.appliesTo.includes(this.name.value)) {
         this.environment = { ...this.environment, ...config.environment };
         this.volumes = [...this.volumes, ...config.volumes];
         this.networks = [...this.networks, ...config.networks];
@@ -94,7 +95,7 @@ export class Composer extends AggregateRoot {
   toJSON() {
     return {
       composer_id: this.composer_id.id,
-      name: this.name,
+      name: this.name.value,
       environment: this.environment,
       volumes: this.volumes,
       networks: this.networks,
@@ -116,7 +117,7 @@ export class Composer extends AggregateRoot {
   }
 
   removeStackByName(name: string): void {
-    this.stacks = this.stacks.filter((s) => s.name !== name);
+    this.stacks = this.stacks.filter((s) => s.name.value !== name);
   }
 
   addService(service: Service): void {
@@ -124,6 +125,6 @@ export class Composer extends AggregateRoot {
   }
 
   removeServiceByName(name: string): void {
-    this.services = this.services.filter((s) => s.name !== name);
+    this.services = this.services.filter((s) => s.name.value !== name);
   }
 }

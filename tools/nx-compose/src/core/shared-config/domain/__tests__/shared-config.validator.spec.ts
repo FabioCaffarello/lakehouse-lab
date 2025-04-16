@@ -1,6 +1,7 @@
 import { SharedConfigValidatorFactory } from '../shared-config.validator';
 import { Notification } from '../../../common/domain/validators/notification';
 import { SharedConfig } from '../shared-config.aggregate';
+import { Name } from '../../../common/domain/value-objects/name.vo';
 
 describe('SharedConfigValidator', () => {
   let notification: Notification;
@@ -12,7 +13,7 @@ describe('SharedConfigValidator', () => {
   });
 
   const validSharedConfig = new SharedConfig({
-    name: 'Valid Config',
+    name: new Name('Valid Config'),
     templates: ['config.yaml'],
     appliesTo: ['service1'],
     environment: { NODE_ENV: 'production' },
@@ -24,20 +25,6 @@ describe('SharedConfigValidator', () => {
     const result = validator.validate(notification, validSharedConfig);
     expect(result).toBe(true);
     expect(notification.hasErrors()).toBe(false);
-  });
-
-  test('should fail validation with empty name', () => {
-    validSharedConfig.name = '';
-    const result = validator.validate(notification, validSharedConfig);
-    expect(result).toBe(false);
-    expect(notification.errors.get('name')).toContain('Name cannot be empty.');
-  });
-
-  test('should fail validation with short name', () => {
-    validSharedConfig.name = 'A';
-    const result = validator.validate(notification, validSharedConfig);
-    expect(result).toBe(false);
-    expect(notification.errors.get('name')).toContain('Name is too short.');
   });
 
   test('should fail validation when templates are empty', () => {

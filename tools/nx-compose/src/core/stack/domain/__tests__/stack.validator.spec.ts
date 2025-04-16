@@ -1,8 +1,9 @@
 import { StackValidator } from '../stack.validator';
+import { Name } from '../../../common/domain/value-objects/name.vo';
 import { Notification } from '../../../common/domain/validators/notification';
 
 const makeValidProps = () => ({
-  name: 'stack-dev',
+  name: new Name('stack-dev'),
   environment: { NODE_ENV: 'production' },
   volumes: ['data:/data'],
   networks: ['bridge'],
@@ -21,15 +22,6 @@ describe('StackValidator', () => {
     const isValid = validator.validate(notification, makeValidProps());
     expect(isValid).toBe(true);
     expect(notification.hasErrors()).toBe(false);
-  });
-
-  test('should fail if name is empty', () => {
-    const props = { ...makeValidProps(), name: '' };
-    const isValid = validator.validate(notification, props);
-    expect(isValid).toBe(false);
-    expect(notification.errors.get('name')).toContain(
-      'name should not be empty'
-    );
   });
 
   test('should fail if volume format is invalid', () => {

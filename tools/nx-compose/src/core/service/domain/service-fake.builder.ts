@@ -1,5 +1,6 @@
 import { Chance } from 'chance';
 import { Service, ServiceId } from './service.aggregate';
+import { Name } from '../../common/domain/value-objects/name.vo';
 import { SharedConfigFakeBuilder } from '../../shared-config/domain/shared-config-fake.builder';
 import { SharedConfig } from '../../shared-config/domain/shared-config.aggregate';
 
@@ -7,7 +8,7 @@ type PropOrFactory<T> = T | ((index: number) => T);
 
 export class ServiceFakeBuilder<TBuild = any> {
   private _service_id: PropOrFactory<ServiceId> | undefined = undefined;
-  private _name: PropOrFactory<string> = (i) => this.chance.name();
+  private _name: PropOrFactory<Name> = (_index) => new Name(this.chance.word());
   private _image: PropOrFactory<string> = (i) => `nginx:latest`;
   private _templateFile: PropOrFactory<string> | undefined = undefined;
   private _environment: PropOrFactory<Record<string, string>> = (i) => ({
@@ -43,7 +44,7 @@ export class ServiceFakeBuilder<TBuild = any> {
     return this;
   }
 
-  withName(value: PropOrFactory<string>) {
+  withName(value: PropOrFactory<Name>) {
     this._name = value;
     return this;
   }

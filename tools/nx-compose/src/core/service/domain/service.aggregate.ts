@@ -1,6 +1,7 @@
 import { AggregateRoot } from '../../common/domain/aggregate-root';
 import { ValueObject } from '../../common/domain/value-object';
 import { Uuid } from '../../common/domain/value-objects/uuid.vo';
+import { Name } from '../../common/domain/value-objects/name.vo';
 import { SharedConfig } from '../../shared-config/domain/shared-config.aggregate';
 import { ServiceValidatorFactory } from './service.validator';
 import { ServiceFakeBuilder } from './service-fake.builder';
@@ -9,7 +10,7 @@ export class ServiceId extends Uuid {}
 
 export type ServiceProps = {
   service_id?: ServiceId;
-  name: string;
+  name: Name;
   image?: string;
   templateFile?: string;
   environment?: Record<string, string>;
@@ -22,7 +23,7 @@ export type ServiceProps = {
 
 export class Service extends AggregateRoot {
   service_id: ServiceId;
-  name: string;
+  name: Name;
   image?: string;
   templateFile?: string;
   environment: Record<string, string>;
@@ -34,10 +35,6 @@ export class Service extends AggregateRoot {
 
   constructor(props: ServiceProps) {
     super();
-
-    if (!props.name) {
-      throw new Error('Service name is required');
-    }
 
     const hasImage = !!props.image;
     const hasTemplate = !!props.templateFile;
@@ -66,7 +63,7 @@ export class Service extends AggregateRoot {
 
   private applySharedConfigs(): void {
     for (const config of this.sharedConfigs) {
-      if (config.appliesTo.includes(this.name)) {
+      if (config.appliesTo.includes(this.name.value)) {
         this.environment = { ...this.environment, ...config.environment };
         this.volumes = [...this.volumes, ...config.volumes];
         this.networks = [...this.networks, ...config.networks];
@@ -99,7 +96,7 @@ export class Service extends AggregateRoot {
   toJSON() {
     return {
       service_id: this.service_id.id,
-      name: this.name,
+      name: this.name.value,
       image: this.image,
       templateFile: this.templateFile,
       environment: this.environment,

@@ -1,12 +1,13 @@
 import { Chance } from 'chance';
 import { SharedConfig, SharedConfigId } from './shared-config.aggregate';
+import { Name } from '../../common/domain/value-objects/name.vo';
 
 type PropOrFactory<T> = T | ((index: number) => T);
 
 export class SharedConfigFakeBuilder<TBuild = any> {
   private _shared_config_id: PropOrFactory<SharedConfigId> | undefined =
     undefined;
-  private _name: PropOrFactory<string> = (_index) => this.chance.word();
+  private _name: PropOrFactory<Name> = (_index) => new Name(this.chance.word());
   private _templates: PropOrFactory<string[]> = (_index) => ['default.yaml'];
   private _environment: PropOrFactory<Record<string, string>> = (_index) => ({
     NODE_ENV: 'production',
@@ -38,7 +39,7 @@ export class SharedConfigFakeBuilder<TBuild = any> {
     return this;
   }
 
-  withName(valueOrFactory: PropOrFactory<string>) {
+  withName(valueOrFactory: PropOrFactory<Name>) {
     this._name = valueOrFactory;
     return this;
   }
@@ -74,7 +75,7 @@ export class SharedConfigFakeBuilder<TBuild = any> {
   }
 
   withInvalidNameTooLong(value?: string) {
-    this._name = value ?? this.chance.string({ length: 256 });
+    this._name = new Name(value ?? this.chance.string({ length: 256 }));
     return this;
   }
 

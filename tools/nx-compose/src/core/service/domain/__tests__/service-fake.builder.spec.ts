@@ -1,5 +1,6 @@
 import { ServiceFakeBuilder } from '../service-fake.builder';
 import { Service } from '../service.aggregate';
+import { Name } from '../../../common/domain/value-objects/name.vo';
 
 describe('ServiceFakeBuilder', () => {
   test('should build a valid Service instance with image', () => {
@@ -34,10 +35,10 @@ describe('ServiceFakeBuilder', () => {
 
   test('should apply shared configs based on appliesTo', () => {
     const service = ServiceFakeBuilder.aService()
-      .withName('service-x')
+      .withName(new Name('my-service'))
       .withSharedConfigs([
         ServiceFakeBuilder.aService()
-          .withName('shared-x')
+          .withName(new Name('my-service'))
           .withTemplateFile('shared.yaml')
           .build().sharedConfigs[0],
       ])

@@ -2,10 +2,11 @@ import { Composer } from '../composer.aggregate';
 import { SharedConfigFakeBuilder } from '../../../shared-config/domain/shared-config-fake.builder';
 import { StackFakeBuilder } from '../../../stack/domain/stack-fake.builder';
 import { ServiceFakeBuilder } from '../../../service/domain/service-fake.builder';
+import { Name } from '../../../common/domain/value-objects/name.vo';
 
 describe('Composer Aggregate', () => {
   const validProps = {
-    name: 'my-composer',
+    name: new Name('my-composer'),
     environment: { NODE_ENV: 'production' },
     volumes: ['data:/data'],
     networks: ['bridge'],
@@ -18,7 +19,7 @@ describe('Composer Aggregate', () => {
     const composer = Composer.create(validProps);
     expect(composer).toBeInstanceOf(Composer);
     expect(composer.notification.hasErrors()).toBe(false);
-    expect(composer.name).toBe('my-composer');
+    expect(composer.name.value).toBe('my-composer');
   });
 
   test('should fail with invalid volume format', () => {
@@ -56,12 +57,12 @@ describe('Composer Aggregate', () => {
 
   test('should apply composer configs to stacks and services', () => {
     const service = ServiceFakeBuilder.aService()
-      .withName('svc1')
+      .withName(new Name('svc1'))
       .withImage('node')
       .build();
 
     const stack = StackFakeBuilder.aStack()
-      .withName('stack1')
+      .withName(new Name('stack1'))
       .withServices([service])
       .build();
 
@@ -82,8 +83,12 @@ describe('Composer Aggregate', () => {
   });
 
   test('should add and remove services and stacks', () => {
-    const stack = StackFakeBuilder.aStack().withName('s1').build();
-    const svc = ServiceFakeBuilder.aService().withName('svc1').build();
+    const stack = StackFakeBuilder.aStack()
+      .withName(new Name('stack1'))
+      .build();
+    const svc = ServiceFakeBuilder.aService()
+      .withName(new Name('svc1'))
+      .build();
 
     const composer = Composer.create(validProps);
     composer.addStack(stack);
@@ -92,7 +97,7 @@ describe('Composer Aggregate', () => {
     expect(composer.stacks.length).toBe(1);
     expect(composer.services.length).toBe(1);
 
-    composer.removeStackByName('s1');
+    composer.removeStackByName('stack1');
     composer.removeServiceByName('svc1');
 
     expect(composer.stacks.length).toBe(0);

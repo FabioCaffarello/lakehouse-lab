@@ -1,6 +1,7 @@
 import { AggregateRoot } from '../../common/domain/aggregate-root';
 import { ValueObject } from '../../common/domain/value-object';
 import { Uuid } from '../../common/domain/value-objects/uuid.vo';
+import { Name } from '../../common/domain/value-objects/name.vo';
 import { Notification } from '../../common/domain/validators/notification';
 import { StackValidatorFactory } from './stack.validator';
 import { SharedConfig } from '../../shared-config/domain/shared-config.aggregate';
@@ -11,7 +12,7 @@ export class StackId extends Uuid {}
 
 export type StackProps = {
   stack_id?: StackId;
-  name: string;
+  name: Name;
   services?: Service[];
   environment?: Record<string, string>;
   volumes?: string[];
@@ -22,7 +23,7 @@ export type StackProps = {
 
 export class Stack extends AggregateRoot {
   stack_id: StackId;
-  name: string;
+  name: Name;
   services: Service[];
   environment: Record<string, string>;
   volumes: string[];
@@ -46,7 +47,7 @@ export class Stack extends AggregateRoot {
 
   private applyStackSharedConfigs(): void {
     for (const config of this.sharedConfigs) {
-      if (config.appliesTo.includes(this.name)) {
+      if (config.appliesTo.includes(this.name.value)) {
         this.environment = { ...this.environment, ...config.environment };
         this.volumes = [...this.volumes, ...config.volumes];
         this.networks = [...this.networks, ...config.networks];
@@ -92,7 +93,7 @@ export class Stack extends AggregateRoot {
   toJSON() {
     return {
       stack_id: this.stack_id.toString(),
-      name: this.name,
+      name: this.name.value,
       environment: this.environment,
       volumes: this.volumes,
       networks: this.networks,
@@ -113,6 +114,6 @@ export class Stack extends AggregateRoot {
   }
 
   removeServiceByName(name: string): void {
-    this.services = this.services.filter((s) => s.name !== name);
+    this.services = this.services.filter((s) => s.name.value !== name);
   }
 }

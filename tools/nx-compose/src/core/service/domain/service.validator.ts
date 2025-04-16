@@ -43,7 +43,7 @@ class ServiceRules {
   networks: string[];
 
   constructor(service: Service) {
-    this.name = service.name;
+    this.name = service.name.value;
     this.image = service.image;
     this.templateFile = service.templateFile;
     this.environment = service.environment;

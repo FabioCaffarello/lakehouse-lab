@@ -1,10 +1,11 @@
 import { Stack } from '../stack.aggregate';
 import { SharedConfigFakeBuilder } from '../../../shared-config/domain/shared-config-fake.builder';
 import { ServiceFakeBuilder } from '../../../service/domain/service-fake.builder';
+import { Name } from '../../../common/domain/value-objects/name.vo';
 
 describe('Stack Aggregate', () => {
   const validProps = {
-    name: 'dev-stack',
+    name: new Name('dev-stack'),
     environment: { DEBUG: 'true' },
     volumes: ['data:/data'],
     networks: ['bridge'],
@@ -16,17 +17,11 @@ describe('Stack Aggregate', () => {
     const stack = Stack.create(validProps);
     expect(stack).toBeInstanceOf(Stack);
     expect(stack.notification.hasErrors()).toBe(false);
-    expect(stack.name).toBe('dev-stack');
+    expect(stack.name.value).toBe('dev-stack');
   });
 
   test('should fail with invalid volume format', () => {
     expect(() => Stack.create({ ...validProps, volumes: ['invalid'] })).toThrow(
-      'Validation failed'
-    );
-  });
-
-  test('should fail with empty name', () => {
-    expect(() => Stack.create({ ...validProps, name: '' })).toThrow(
       'Validation failed'
     );
   });
@@ -64,7 +59,7 @@ describe('Stack Aggregate', () => {
 
   test('should apply stack configs to services', () => {
     const service = ServiceFakeBuilder.aService()
-      .withName('s1')
+      .withName(new Name('service1'))
       .withImage('nginx')
       .build();
 
@@ -85,11 +80,11 @@ describe('Stack Aggregate', () => {
 
   test('should add and remove services correctly', () => {
     const s1 = ServiceFakeBuilder.aService()
-      .withName('s1')
+      .withName(new Name('service1'))
       .withImage('img1')
       .build();
     const s2 = ServiceFakeBuilder.aService()
-      .withName('s2')
+      .withName(new Name('service2'))
       .withImage('img2')
       .build();
 
@@ -99,8 +94,8 @@ describe('Stack Aggregate', () => {
 
     expect(stack.services.length).toBe(2);
 
-    stack.removeServiceByName('s1');
+    stack.removeServiceByName('service1');
     expect(stack.services.length).toBe(1);
-    expect(stack.services[0].name).toBe('s2');
+    expect(stack.services[0].name.value).toBe('service2');
   });
 });

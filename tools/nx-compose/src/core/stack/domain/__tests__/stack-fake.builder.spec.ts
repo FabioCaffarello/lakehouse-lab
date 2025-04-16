@@ -1,5 +1,6 @@
 import { StackFakeBuilder } from '../stack-fake.builder';
 import { Stack } from '../stack.aggregate';
+import { Name } from '../../../common/domain/value-objects/name.vo';
 
 describe('StackFakeBuilder', () => {
   test('should build a valid Stack instance with default values', () => {
@@ -14,8 +15,10 @@ describe('StackFakeBuilder', () => {
   });
 
   test('should override name', () => {
-    const stack = StackFakeBuilder.aStack().withName('custom-stack').build();
-    expect(stack.name).toBe('custom-stack');
+    const stack = StackFakeBuilder.aStack()
+      .withName(new Name('custom-stack'))
+      .build();
+    expect(stack.name.value).toBe('custom-stack');
   });
 
   test('should override environment', () => {
@@ -45,7 +48,9 @@ describe('StackFakeBuilder', () => {
   });
 
   test('should apply sharedConfigs correctly', () => {
-    const stack = StackFakeBuilder.aStack().withName('dev-stack').build();
+    const stack = StackFakeBuilder.aStack()
+      .withName(new Name('dev-stack'))
+      .build();
 
     expect(stack.sharedConfigs.length).toBeGreaterThan(0);
     expect(Object.keys(stack.environment).length).toBeGreaterThan(0);

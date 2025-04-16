@@ -1,8 +1,9 @@
 import { Service } from '../service.aggregate';
+import { Name } from '../../../common/domain/value-objects/name.vo';
 
 describe('Service Aggregate', () => {
   const validProps = {
-    name: 'my-service',
+    name: new Name('my-service'),
     image: 'nginx:latest',
     templateFile: undefined,
     environment: { NODE_ENV: 'production' },
@@ -69,7 +70,7 @@ describe('Service Aggregate', () => {
     const service = Service.create(validProps);
     const json = service.toJSON();
     expect(json).toMatchObject({
-      name: validProps.name,
+      name: validProps.name.value,
       image: validProps.image,
       environment: validProps.environment,
       ports: validProps.ports,

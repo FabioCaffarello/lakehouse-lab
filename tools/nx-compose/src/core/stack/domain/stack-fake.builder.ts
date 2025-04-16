@@ -1,16 +1,16 @@
 import { Stack, StackProps } from './stack.aggregate';
 import { StackId } from './stack.aggregate';
+import { Name } from '../../common/domain/value-objects/name.vo';
 import { ServiceFakeBuilder } from '../../service/domain/service-fake.builder';
 import { SharedConfigFakeBuilder } from '../../shared-config/domain/shared-config-fake.builder';
 import { Chance } from 'chance';
-
-const chance = Chance();
 
 type PropOrFactory<T> = T | ((index: number) => T);
 
 export class StackFakeBuilder<TBuild = any> {
   private _stack_id: PropOrFactory<StackId> | undefined = undefined;
-  private _name: PropOrFactory<string> = (i) => `stack-${i}-${chance.word()}`;
+  private _name: PropOrFactory<Name> = (_index) =>
+    new Name(`stack-${_index}-${this.chance.word()}`);
   private _services: PropOrFactory<any[]> = (i) => [
     ServiceFakeBuilder.aService().build(),
   ];
@@ -24,6 +24,7 @@ export class StackFakeBuilder<TBuild = any> {
   ];
   private _created_at: PropOrFactory<Date> | undefined = undefined;
 
+  private chance = Chance();
   private countObjs: number;
 
   static aStack() {
@@ -43,7 +44,7 @@ export class StackFakeBuilder<TBuild = any> {
     return this;
   }
 
-  withName(value: PropOrFactory<string>) {
+  withName(value: PropOrFactory<Name>) {
     this._name = value;
     return this;
   }

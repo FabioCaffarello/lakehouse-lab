@@ -1,8 +1,9 @@
 import { ComposerValidator } from '../composer.validator';
+import { Name } from '../../../common/domain/value-objects/name.vo';
 import { Notification } from '../../../common/domain/validators/notification';
 
 const makeValidProps = () => ({
-  name: 'prod-composer',
+  name: new Name('prod-composer'),
   environment: { NODE_ENV: 'production' },
   volumes: ['data:/data'],
   networks: ['bridge'],
@@ -21,22 +22,6 @@ describe('ComposerValidator', () => {
     const isValid = validator.validate(notification, makeValidProps());
     expect(isValid).toBe(true);
     expect(notification.hasErrors()).toBe(false);
-  });
-
-  test('should fail with empty name', () => {
-    const props = { ...makeValidProps(), name: '' };
-    const isValid = validator.validate(notification, props);
-    expect(isValid).toBe(false);
-    expect(notification.errors.get('name')).toContain(
-      'name should not be empty'
-    );
-  });
-
-  test('should fail with name too short', () => {
-    const props = { ...makeValidProps(), name: 'a' };
-    const isValid = validator.validate(notification, props);
-    expect(isValid).toBe(false);
-    expect(notification.errors.get('name')).toContain('Name is too short.');
   });
 
   test('should fail with invalid volume format', () => {

@@ -40,7 +40,10 @@ class ComposerRules {
   networks?: string[];
 
   constructor(composer: Composer) {
-    Object.assign(this, composer);
+    this.name = composer.name.value;
+    this.environment = composer.environment;
+    this.volumes = composer.volumes;
+    this.networks = composer.networks;
   }
 }
 

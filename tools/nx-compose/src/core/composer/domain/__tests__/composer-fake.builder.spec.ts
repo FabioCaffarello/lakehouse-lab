@@ -1,5 +1,6 @@
 import { ComposerFakeBuilder } from '../composer-fake.builder';
 import { Composer } from '../composer.aggregate';
+import { Name } from '../../../common/domain/value-objects/name.vo';
 import { SharedConfigFakeBuilder } from '../../../shared-config/domain/shared-config-fake.builder';
 
 describe('ComposerFakeBuilder', () => {
@@ -20,11 +21,11 @@ describe('ComposerFakeBuilder', () => {
 
   test('should override name and environment', () => {
     const composer = ComposerFakeBuilder.aComposer()
-      .withName('custom-composer')
+      .withName(new Name('custom-composer'))
       .withEnvironment({ CUSTOM: 'true' })
       .build();
 
-    expect(composer.name).toBe('custom-composer');
+    expect(composer.name.value).toBe('custom-composer');
     expect(composer.environment.CUSTOM).toBe('true');
   });
 
@@ -46,7 +47,7 @@ describe('ComposerFakeBuilder', () => {
 
   test('should include shared configs that apply to composer name', () => {
     const composer = ComposerFakeBuilder.aComposer()
-      .withName('special-composer')
+      .withName(new Name('special-composer'))
       .withSharedConfigs([
         SharedConfigFakeBuilder.aSharedConfig()
           .withAppliesTo(['special-composer'])

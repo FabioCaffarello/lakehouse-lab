@@ -5,14 +5,13 @@ import { ServiceFakeBuilder } from '../../service/domain/service-fake.builder';
 import { SharedConfigFakeBuilder } from '../../shared-config/domain/shared-config-fake.builder';
 import { Stack } from '../../stack/domain/stack.aggregate';
 import { Service } from '../../service/domain/service.aggregate';
+import { Name } from '../../common/domain/value-objects/name.vo';
 import { SharedConfig } from '../../shared-config/domain/shared-config.aggregate';
-
-const chance = new Chance();
 
 type PropOrFactory<T> = T | ((index: number) => T);
 
 export class ComposerFakeBuilder<TBuild = any> {
-  private _name: PropOrFactory<string> = () => chance.name();
+  private _name: PropOrFactory<Name> = () => new Name(this.chance.name());
   private _environment: PropOrFactory<Record<string, string>> = () => ({
     NODE_ENV: 'test',
   });
@@ -27,6 +26,8 @@ export class ComposerFakeBuilder<TBuild = any> {
   private _sharedConfigs: PropOrFactory<SharedConfig[]> = () => [
     SharedConfigFakeBuilder.aSharedConfig().build(),
   ];
+
+  private chance = Chance();
   private countObjs;
 
   static aComposer() {
@@ -41,7 +42,7 @@ export class ComposerFakeBuilder<TBuild = any> {
     this.countObjs = countObjs;
   }
 
-  withName(value: PropOrFactory<string>) {
+  withName(value: PropOrFactory<Name>) {
     this._name = value;
     return this;
   }

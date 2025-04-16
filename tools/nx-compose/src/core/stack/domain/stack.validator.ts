@@ -37,7 +37,10 @@ class StackRules {
   networks?: string[];
 
   constructor(stack: Stack) {
-    Object.assign(this, stack);
+    this.name = stack.name.value;
+    this.environment = stack.environment;
+    this.volumes = stack.volumes;
+    this.networks = stack.networks;
   }
 }
 

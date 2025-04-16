@@ -1,9 +1,10 @@
 import { SharedConfig } from '../shared-config.aggregate';
 import { Notification } from '../../../common/domain/validators/notification';
+import { Name } from '../../../common/domain/value-objects/name.vo';
 
 describe('SharedConfig', () => {
   const validProps = {
-    name: 'My Config',
+    name: new Name('My Config'),
     templates: ['template.yaml'],
     appliesTo: ['service1'],
     environment: { NODE_ENV: 'production' },
@@ -18,7 +19,9 @@ describe('SharedConfig', () => {
   });
 
   test('should fail when creating with invalid name', () => {
-    expect(() => SharedConfig.create({ ...validProps, name: '' })).toThrow();
+    expect(() =>
+      SharedConfig.create({ ...validProps, name: new Name('') })
+    ).toThrow();
   });
 
   test('should fail when templates are empty', () => {
@@ -35,8 +38,8 @@ describe('SharedConfig', () => {
 
   test('should change name correctly', () => {
     const sharedConfig = SharedConfig.create(validProps);
-    sharedConfig.changeName('New Name');
-    expect(sharedConfig.name).toBe('New Name');
+    sharedConfig.changeName(new Name('New Name'));
+    expect(sharedConfig.name.value).toBe('New Name');
     expect(sharedConfig.notification.hasErrors()).toBe(false);
   });
 
@@ -56,7 +59,7 @@ describe('SharedConfig', () => {
     const sharedConfig = SharedConfig.create(validProps);
     const json = sharedConfig.toJSON();
     expect(json).toMatchObject({
-      name: validProps.name,
+      name: validProps.name.value,
       templates: validProps.templates,
       appliesTo: validProps.appliesTo,
       environment: validProps.environment,

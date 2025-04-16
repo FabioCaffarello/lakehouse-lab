@@ -1,5 +1,6 @@
 import { SharedConfigFakeBuilder } from '../shared-config-fake.builder';
 import { SharedConfig } from '../shared-config.aggregate';
+import { Name } from '../../../common/domain/value-objects/name.vo';
 
 describe('SharedConfigFakeBuilder', () => {
   test('should build a valid SharedConfig instance', () => {
@@ -17,9 +18,9 @@ describe('SharedConfigFakeBuilder', () => {
 
   test('should override name with specific value', () => {
     const config = SharedConfigFakeBuilder.aSharedConfig()
-      .withName('MyConfig')
+      .withName(new Name('MyConfig'))
       .build();
-    expect(config.name).toBe('MyConfig');
+    expect(config.name.value).toBe('MyConfig');
   });
 
   test('should override templates with specific values', () => {
@@ -36,9 +37,10 @@ describe('SharedConfigFakeBuilder', () => {
   });
 
   test('should provide access to individual field values via getters', () => {
-    const builder =
-      SharedConfigFakeBuilder.aSharedConfig().withName('GetterTest');
-    expect(builder.name).toBe('GetterTest');
+    const builder = SharedConfigFakeBuilder.aSharedConfig().withName(
+      new Name('GetterTest')
+    );
+    expect(builder.name.value).toBe('GetterTest');
   });
 
   test('should throw error when accessing unset optional field via getter', () => {

@@ -61,7 +61,7 @@ export class SharedConfigRules {
   environment?: Record<string, string>;
 
   constructor(entity: SharedConfig) {
-    this.name = entity.name;
+    this.name = entity.name.value;
     this.templates = entity.templates;
     this.appliesTo = entity.appliesTo;
     this.volumes = entity.volumes;

@@ -1,10 +1,11 @@
 import { ServiceValidator } from '../service.validator';
 import { Notification } from '../../../common/domain/validators/notification';
 import { Service } from '../service.aggregate';
+import { Name } from '../../../common/domain/value-objects/name.vo';
 
 const makeBaseService = (overrides: Partial<Service> = {}): Service => {
   return new Service({
-    name: 'valid-service',
+    name: new Name('valid-service'),
     image: 'nginx:latest',
     environment: { NODE_ENV: 'test' },
     ports: ['3000:3000'],
@@ -29,13 +30,6 @@ describe('ServiceValidator', () => {
     const result = validator.validate(notification, service);
     expect(result).toBe(true);
     expect(notification.hasErrors()).toBe(false);
-  });
-
-  test('should invalidate service with short name', () => {
-    const service = makeBaseService({ name: 'a' });
-    const result = validator.validate(notification, service, ['name']);
-    expect(result).toBe(false);
-    expect(notification.errors.get('name')).toContain('Name is too short.');
   });
 
   test('should invalidate invalid volume format', () => {
