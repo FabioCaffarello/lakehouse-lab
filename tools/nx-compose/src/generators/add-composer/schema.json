@@ -1,61 +1,27 @@
 {
   "$schema": "https://json-schema.org/schema",
-  "$id": "composer",
   "type": "object",
-  "title": "Composer Generator",
   "properties": {
     "name": {
       "type": "string",
-      "$default": {
-        "$source": "argv",
-        "index": 0
-      },
-      "x-prompt": "What name would you like to use?"
+      "$default": { "$source": "argv", "index": 0 },
+      "x-prompt": "Nome base do recurso (ex: user, product)"
     },
     "action": {
       "type": "string",
-      "enum": ["create", "delete", "update", "list", "get"],
+      "enum": ["create", "update", "delete", "get", "list"],
       "x-prompt": {
-        "message": "Qual ação deseja realizar?",
+        "message": "Qual operação deseja gerar?",
         "type": "select",
         "items": [
           { "value": "create", "label": "Create" },
-          { "value": "delete", "label": "Delete" },
           { "value": "update", "label": "Update" },
-          { "value": "list", "label": "List" },
-          { "value": "get", "label": "Get" }
+          { "value": "delete", "label": "Delete" },
+          { "value": "get", "label": "Get" },
+          { "value": "list", "label": "List" }
         ]
       }
     }
   },
-  "required": ["name", "action"],
-  "allOf": [
-    {
-      "if": {
-        "properties": { "action": { "const": "create" } }
-      },
-      "then": {
-        "properties": {
-          "fields": {
-            "type": "array",
-            "description": "Campos para criação",
-            "items": {
-              "type": "object",
-              "properties": {
-                "name": { "type": "string" },
-                "type": {
-                  "type": "string",
-                  "enum": ["string", "number", "boolean"]
-                },
-                "required": { "type": "boolean" }
-              },
-              "required": ["name", "type"]
-            },
-            "x-prompt": "Defina os campos do recurso"
-          }
-        },
-        "required": ["fields"]
-      }
-    }
-  ]
+  "required": ["name", "action"]
 }
