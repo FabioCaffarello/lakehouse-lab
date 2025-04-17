@@ -35,38 +35,13 @@
         "properties": { "action": { "const": "create" } }
       },
       "then": {
-        "$ref": "/schemas/createFields"
-      }
-    },
-    {
-      "if": {
-        "properties": { "action": { "const": "delete" } }
-      },
-      "then": {
-        "$ref": "#/definitions/deleteFields"
-      }
-    },
-    {
-      "if": {
-        "properties": { "action": { "const": "update" } }
-      },
-      "then": {
-        "$ref": "#/definitions/updateFields"
-      }
-    },
-    {
-      "if": {
-        "properties": { "action": { "const": "get" } }
-      },
-      "then": {
-        "$ref": "#/definitions/getFields"
+        "$ref": "#/$def/createFields"
       }
     }
   ],
   "$def": {
     "createFields": {
-      "$id": "/schemas/createFields",
-      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "#createFields",
       "type": "object",
       "properties": {
         "fields": {
@@ -88,46 +63,6 @@
         }
       },
       "required": ["fields"]
-    },
-    "deleteFields": {
-      "properties": {
-        "id": {
-          "type": "string",
-          "x-prompt": "Informe o ID para exclusão"
-        }
-      },
-      "required": ["id"]
-    },
-    "updateFields": {
-      "properties": {
-        "id": {
-          "type": "string",
-          "x-prompt": "ID do recurso a ser atualizado"
-        },
-        "fields": {
-          "type": "array",
-          "description": "Campos a serem atualizados",
-          "items": {
-            "type": "object",
-            "properties": {
-              "name": { "type": "string" },
-              "value": { "type": "string" }
-            },
-            "required": ["name"]
-          },
-          "x-prompt": "Defina os campos a atualizar"
-        }
-      },
-      "required": ["id", "fields"]
-    },
-    "getFields": {
-      "properties": {
-        "id": {
-          "type": "string",
-          "x-prompt": "Informe o ID do recurso"
-        }
-      },
-      "required": ["id"]
     }
   }
 }
