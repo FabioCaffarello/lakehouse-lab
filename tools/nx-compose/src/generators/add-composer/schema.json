@@ -57,31 +57,5 @@
         "required": ["fields"]
       }
     }
-  ],
-  "$def": {
-    "createFields": {
-      "$id": "#createFields",
-      "type": "object",
-      "properties": {
-        "fields": {
-          "type": "array",
-          "description": "Campos para criação",
-          "items": {
-            "type": "object",
-            "properties": {
-              "name": { "type": "string" },
-              "type": {
-                "type": "string",
-                "enum": ["string", "number", "boolean"]
-              },
-              "required": { "type": "boolean" }
-            },
-            "required": ["name", "type"]
-          },
-          "x-prompt": "Defina os campos do recurso"
-        }
-      },
-      "required": ["fields"]
-    }
-  }
+  ]
 }
