@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/schema",
-  "$id": "AddComposer",
+  "$id": "AdComposer",
   "title": "",
   "type": "object",
   "properties": {
@@ -12,7 +12,23 @@
         "index": 0
       },
       "x-prompt": "What name would you like to use?"
+    },
+    "action": {
+      "type": "string",
+      "description": "Ação a ser realizada",
+      "enum": ["create", "delete", "update", "list", "get"],
+      "x-prompt": {
+        "message": "Qual ação deseja realizar?",
+        "type": "select",
+        "items": [
+          { "value": "create", "label": "Create" },
+          { "value": "delete", "label": "Delete" },
+          { "value": "update", "label": "Update" },
+          { "value": "list", "label": "List" },
+          { "value": "get", "label": "Get" }
+        ]
+      }
     }
   },
-  "required": ["name"]
+  "required": ["name", "action"]
 }

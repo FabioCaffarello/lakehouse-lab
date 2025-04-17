@@ -1,3 +1,3 @@
-export interface AddComposerGeneratorSchema {
+export interface SharedConfigGeneratorSchema {
   name: string;
 }
