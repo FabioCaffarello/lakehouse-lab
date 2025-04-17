@@ -1,7 +1,7 @@
 {
   "generators": {
     "add-composer": {
-      "factory": "./src/generators/add-composer/add-composer",
+      "factory": "./src/generators/add-composer/generator",
       "schema": "./src/generators/add-composer/schema.json",
       "description": "add-composer generator"
     },

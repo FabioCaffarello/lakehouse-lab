@@ -27,6 +27,9 @@
       "options": {
         "packageManager": "poetry"
       }
+    },
+    {
+      "plugin": "@lakehouse-lab/nx-compose"
     }
   ],
   "release": {
