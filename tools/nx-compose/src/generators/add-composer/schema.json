@@ -1,22 +1,22 @@
 {
   "$schema": "https://json-schema.org/schema",
-  "$id": "AdComposer",
-  "title": "",
+  "$id": "composer",
+  "title": "Composer Generator",
   "type": "object",
   "properties": {
     "name": {
       "type": "string",
-      "description": "",
       "$default": {
         "$source": "argv",
         "index": 0
       },
+      "description": "Nome base para o recurso",
       "x-prompt": "What name would you like to use?"
     },
     "action": {
       "type": "string",
-      "description": "Ação a ser realizada",
       "enum": ["create", "delete", "update", "list", "get"],
+      "description": "Ação a ser realizada",
       "x-prompt": {
         "message": "Qual ação deseja realizar?",
         "type": "select",
@@ -28,7 +28,54 @@
           { "value": "get", "label": "Get" }
         ]
       }
+    },
+    "id": {
+      "type": "string",
+      "description": "Identificador do recurso",
+      "x-prompt": "Informe o ID do recurso"
+    },
+    "fields": {
+      "type": "array",
+      "description": "Campos a serem considerados",
+      "items": {
+        "type": "string"
+      },
+      "x-prompt": "Liste os campos (separados por vírgula)"
     }
   },
-  "required": ["name", "action"]
+  "required": ["name", "action"],
+  "allOf": [
+    {
+      "if": {
+        "properties": { "action": { "const": "create" } }
+      },
+      "then": {
+        "required": ["fields"]
+      }
+    },
+    {
+      "if": {
+        "properties": { "action": { "const": "delete" } }
+      },
+      "then": {
+        "required": ["id"]
+      }
+    },
+    {
+      "if": {
+        "properties": { "action": { "const": "update" } }
+      },
+      "then": {
+        "required": ["id", "fields"]
+      }
+    },
+    {
+      "if": {
+        "properties": { "action": { "const": "get" } }
+      },
+      "then": {
+        "required": ["id"]
+      }
+    }
+  ]
 }
