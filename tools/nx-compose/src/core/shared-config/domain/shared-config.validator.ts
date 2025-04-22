@@ -24,7 +24,6 @@ export class SharedConfigRules {
     groups: ['templates'],
     message: 'At least one template is required.',
   })
-  // Each template string must end with .yaml or .yml
   @Matches(/.*\.(yaml|yml)$/, {
     groups: ['templates'],
     message: 'Each template must have a YAML extension (.yaml or .yml).',
@@ -39,7 +38,6 @@ export class SharedConfigRules {
   })
   appliesTo: string[];
 
-  // Validate volumes: for our simple case, assume a volume must be "name:mountpoint"
   @IsArray({ groups: ['volumes'] })
   @Matches(/^.+:[^:]+$/, {
     groups: ['volumes'],
@@ -72,7 +70,6 @@ export class SharedConfigRules {
 
 export class SharedConfigValidator extends ClassValidatorFields {
   validate(notification: Notification, data: any, fields?: string[]): boolean {
-    // By default, validate all relevant groups.
     const newFields =
       fields && fields.length
         ? fields

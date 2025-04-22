@@ -3,7 +3,7 @@ import { SharedConfig } from '../../../domain/shared-config.aggregate';
 export type SharedConfigOutput = {
   id: string;
   name: string;
-  templates: string[]; // Must have at least one YAML template
+  templates: string[];
   environment?: Record<string, string>;
   volumes?: string[];
   networks?: string[];

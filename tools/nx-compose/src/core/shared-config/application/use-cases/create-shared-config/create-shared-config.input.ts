@@ -1,11 +1,9 @@
 import {
-  IsBoolean,
   IsNotEmpty,
   IsOptional,
   IsString,
   validateSync,
 } from 'class-validator';
-import { Name } from '../../../../common/domain/value-objects/name.vo';
 
 export type CreateSharedConfigInputConstructorProps = {
   name: string;
