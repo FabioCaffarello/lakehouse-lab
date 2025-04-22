@@ -1,4 +1,3 @@
-// name.vo.ts — Value Object para nomes com TDD
 import { ValueObject } from '../value-object';
 
 export class InvalidNameError extends Error {

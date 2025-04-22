@@ -6,7 +6,6 @@ export abstract class AggregateRoot extends Entity {
   events: Set<IDomainEvent> = new Set<IDomainEvent>();
   dispatchedEvents: Set<IDomainEvent> = new Set<IDomainEvent>();
   localMediator = new EventEmitter2();
-  //vai disparar somente o evento dentro do próprio aggregate
   applyEvent(event: IDomainEvent) {
     this.events.add(event);
     this.localMediator.emit(event.constructor.name, event);

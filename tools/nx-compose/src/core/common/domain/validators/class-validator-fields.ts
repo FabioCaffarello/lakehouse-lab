@@ -4,7 +4,6 @@ import { Notification } from './notification';
 
 export abstract class ClassValidatorFields implements IValidatorFields {
   validate(notification: Notification, data: any, fields: string[]): boolean {
-    // const cleaned = removeUndefinedFields(data);
     const errors = validateSync(data, {
       groups: fields,
     });
