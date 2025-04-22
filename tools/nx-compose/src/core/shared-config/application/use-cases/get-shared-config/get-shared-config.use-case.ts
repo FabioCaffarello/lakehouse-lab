@@ -21,13 +21,14 @@ export class GetSharedConfigUseCase
       filter: input.name,
       per_page: 1,
     });
-    const entity = await this.repository.search(params);
+    const result = await this.repository.search(params);
 
-    if (!entity) {
+    if (result.items.length === 0) {
       throw new NotFoundError(input.name, SharedConfig);
     }
 
-    return SharedConfigOutputMapper.toOutput(entity);
+    const found = result.items[0];
+    return SharedConfigOutputMapper.toOutput(found);
   }
 }
 
