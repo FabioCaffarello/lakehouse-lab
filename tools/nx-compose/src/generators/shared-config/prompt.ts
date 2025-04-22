@@ -50,6 +50,61 @@ export async function askForName(): Promise<string> {
   return name;
 }
 
+export async function askForPage(): Promise<number> {
+  const { page } = await prompt<{ page: number }>({
+    type: 'input',
+    name: 'page',
+    message: 'Page:',
+    initial: 1,
+    validate: (v) => (!isNaN(v) && v > 0 ? true : 'Must be a positive number'),
+  });
+  return page;
+}
+
+export async function askForPerPage(): Promise<number> {
+  const { per_page } = await prompt<{ per_page: number }>({
+    type: 'input',
+    name: 'per_page',
+    message: 'Items per page:',
+    initial: 10,
+    validate: (v) => (!isNaN(v) && v > 0 ? true : 'Must be a positive number'),
+  });
+  return per_page;
+}
+
+export async function askForSort(): Promise<string | null> {
+  const { sort } = await prompt<{ sort: string | null }>({
+    type: 'input',
+    name: 'sort',
+    message: 'Sort by (field name):',
+    initial: null,
+  });
+  return sort;
+}
+
+export async function askForSortDir(): Promise<string | null> {
+  const { sort_dir } = await prompt<{ sort_dir: string | null }>({
+    type: 'select',
+    name: 'sort_dir',
+    message: 'Sort direction:',
+    choices: [
+      { name: 'asc', message: 'Ascending' },
+      { name: 'desc', message: 'Descending' },
+    ],
+  });
+  return sort_dir;
+}
+
+export async function askForFilter(): Promise<string | null> {
+  const { filter } = await prompt<{ filter: string | null }>({
+    type: 'input',
+    name: 'filter',
+    message: 'Filter by (field name):',
+    initial: null,
+  });
+  return filter;
+}
+
 function listYamlTemplates(dir: string): string[] {
   try {
     return readdirSync(dir).filter((f) => /\.ya?ml$/i.test(f));

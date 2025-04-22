@@ -5,6 +5,11 @@ import {
   askForId,
   askForName,
   askCreateOrUpdateProps,
+  askForPage,
+  askForPerPage,
+  askForSort,
+  askForSortDir,
+  askForFilter,
 } from './prompt';
 import { SharedConfigGeneratorSchema } from './schema';
 import { CreateSharedConfigUseCase } from '../../core/shared-config/application/use-cases/create-shared-config/create-shared-config.use-case';
@@ -19,6 +24,7 @@ import {
   DeleteSharedConfigUseCase,
   DeleteSharedConfigInput,
 } from '../../core/shared-config/application/use-cases/delete-shared-config/delete-shared-config.use-case';
+import { ListSharedConfigUseCase } from '../../core/shared-config/application/use-cases/list-shared-config/list-shared-config.use-case';
 import { SharedConfigId } from '../../core/shared-config/domain/shared-config.aggregate';
 import { SharedConfigFileRepository } from '../../core/shared-config/infra/db/file-storage/shared-config-file.repository';
 
@@ -41,6 +47,9 @@ export default async function sharedConfigGenerator(
       break;
     case 'delete':
       await handleDelete(schema, repo);
+      break;
+    case 'list':
+      await handleList(schema, repo);
       break;
     default:
       console.warn(`❌ Unknown action: ${action}`);
@@ -116,6 +125,31 @@ async function handleGet(
     console.log('✅ get SharedConfig:', result);
   } catch (err: any) {
     console.error('❌ Error on get SharedConfig:', err.message);
+  }
+}
+
+async function handleList(
+  schema: SharedConfigGeneratorSchema,
+  repo: SharedConfigFileRepository
+) {
+  const uc = new ListSharedConfigUseCase(repo);
+  const page = await askForPage();
+  const per_page = await askForPerPage();
+  const sort = await askForSort();
+  const sort_dir = sort ? await askForSortDir() : undefined;
+  const filter = await askForFilter();
+  const input = {
+    page: page,
+    per_page: per_page,
+    sort: sort,
+    sort_dir: sort_dir,
+    filter: filter,
+  };
+  try {
+    const result = await uc.execute(input);
+    console.log('✅ list SharedConfig:', result);
+  } catch (err: any) {
+    console.error('❌ Error on list SharedConfig:', err.message);
   }
 }
 
