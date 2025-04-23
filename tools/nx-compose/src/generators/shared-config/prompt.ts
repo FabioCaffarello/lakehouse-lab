@@ -1,16 +1,6 @@
 import { prompt } from 'enquirer';
 import { readdirSync } from 'fs';
-
-export interface SharedConfigGeneratorSchema {
-  action?: 'create' | 'update' | 'delete' | 'get' | 'list';
-  id?: string;
-  name?: string;
-  templates?: string[];
-  appliesTo?: string[];
-  environment?: Record<string, string>;
-  volumes?: string[];
-  networks?: string[];
-}
+import { SharedConfigGeneratorSchema } from './schema';
 
 export async function askAction(): Promise<
   SharedConfigGeneratorSchema['action']

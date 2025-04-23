@@ -93,6 +93,46 @@ export class Service extends AggregateRoot {
     return this.service_id;
   }
 
+  changeName(name: Name): void {
+    this.name = name;
+    this.validate(['name']);
+  }
+
+  changeImage(image: string): void {
+    this.image = image;
+    this.validate(['image']);
+  }
+
+  changeTemplateFile(templateFile: string): void {
+    this.templateFile = templateFile;
+    this.validate(['templateFile']);
+  }
+
+  changeEnvironment(env: Record<string, string>): void {
+    this.environment = env;
+    this.validate(['environment']);
+  }
+
+  changeVolumes(volumes: string[]): void {
+    this.volumes = volumes;
+    this.validate(['volumes']);
+  }
+
+  changeNetworks(networks: string[]): void {
+    this.networks = networks;
+    this.validate(['networks']);
+  }
+
+  changePorts(ports: string[]): void {
+    this.ports = ports;
+    this.validate(['ports']);
+  }
+
+  changeSharedConfigs(sharedConfigs: SharedConfig[]): void {
+    this.sharedConfigs = sharedConfigs;
+    this.validate(['sharedConfigs']);
+  }
+
   toJSON() {
     return {
       service_id: this.service_id.id,

@@ -4,6 +4,11 @@
       "factory": "./src/generators/shared-config/shared-config",
       "schema": "./src/generators/shared-config/schema.json",
       "description": "shared-config generator"
+    },
+    "service": {
+      "factory": "./src/generators/service/service",
+      "schema": "./src/generators/service/schema.json",
+      "description": "service generator"
     }
   }
 }

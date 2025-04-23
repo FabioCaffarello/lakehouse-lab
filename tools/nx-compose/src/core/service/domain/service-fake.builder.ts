@@ -17,11 +17,14 @@ export class ServiceFakeBuilder<TBuild = any> {
   private _ports: PropOrFactory<string[]> = (i) => ['3000:3000'];
   private _volumes: PropOrFactory<string[]> = (i) => ['data:/data'];
   private _networks: PropOrFactory<string[]> = (i) => ['bridge'];
-  private _sharedConfigs: PropOrFactory<SharedConfig[]> = (i) => [
-    SharedConfigFakeBuilder.aSharedConfig()
-      .withAppliesTo([this.getValue('name')])
-      .build(),
-  ];
+  private _sharedConfigs: PropOrFactory<SharedConfig[]> = (i) => {
+    const nameVO = this.callFactory(this._name, i) as Name;
+    return [
+      SharedConfigFakeBuilder.aSharedConfig()
+        .withAppliesTo([nameVO.value])
+        .build(),
+    ];
+  };
   private _created_at: PropOrFactory<Date> | undefined = undefined;
 
   private chance = Chance();
