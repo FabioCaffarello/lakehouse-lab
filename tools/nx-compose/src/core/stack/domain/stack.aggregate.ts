@@ -109,6 +109,34 @@ export class Stack extends AggregateRoot {
     return stack;
   }
 
+  changeName(name: Name): void {
+    this.name = name;
+    this.validate(['name']);
+  }
+
+  changeEnvironment(env: Record<string, string>): void {
+    this.environment = env;
+    this.validate(['environment']);
+  }
+
+  changeVolumes(volumes: string[]): void {
+    this.volumes = volumes;
+    this.validate(['volumes']);
+  }
+
+  changeNetworks(networks: string[]): void {
+    this.networks = networks;
+    this.validate(['networks']);
+  }
+
+  changeSharedConfigs(sharedConfigs: SharedConfig[]): void {
+    this.sharedConfigs = sharedConfigs;
+  }
+
+  changeServices(services: Service[]): void {
+    this.services = services;
+  }
+
   addService(service: Service): void {
     this.services.push(service);
   }

@@ -121,6 +121,38 @@ export class Composer extends AggregateRoot {
     this.stacks.push(stack);
   }
 
+  changeName(name: Name): void {
+    this.name = name;
+    this.validate(['name']);
+  }
+
+  changeEnvironment(env: Record<string, string>): void {
+    this.environment = env;
+    this.validate(['environment']);
+  }
+
+  changeVolumes(vols: string[]): void {
+    this.volumes = vols;
+    this.validate(['volumes']);
+  }
+
+  changeNetworks(nets: string[]): void {
+    this.networks = nets;
+    this.validate(['networks']);
+  }
+
+  changeStacks(stacks: Stack[]): void {
+    this.stacks = stacks;
+  }
+
+  changeServices(services: Service[]): void {
+    this.services = services;
+  }
+
+  changeSharedConfigs(sharedConfigs: SharedConfig[]): void {
+    this.sharedConfigs = sharedConfigs;
+  }
+
   removeStackByName(name: string): void {
     this.stacks = this.stacks.filter((s) => s.name.value !== name);
   }

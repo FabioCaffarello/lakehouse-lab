@@ -130,7 +130,6 @@ export class Service extends AggregateRoot {
 
   changeSharedConfigs(sharedConfigs: SharedConfig[]): void {
     this.sharedConfigs = sharedConfigs;
-    this.validate(['sharedConfigs']);
   }
 
   toJSON() {
@@ -163,13 +162,11 @@ export class Service extends AggregateRoot {
       'volumes',
       'networks',
     ]);
-
     if (!isValid) {
       throw new Error(
         `Validation failed: ${JSON.stringify(service.notification.toJSON())}`
       );
     }
-
     return service;
   }
 }

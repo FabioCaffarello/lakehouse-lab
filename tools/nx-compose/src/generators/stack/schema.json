@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "$id": "Stack",
+  "title": "",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "action": {
+      "type": "string",
+      "enum": ["create", "update", "delete", "get", "list"]
+    },
+    "name": {
+      "type": "string"
+    },
+    "templates": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "environment": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "volumes": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "networks": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "sharedConfigs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "services": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": []
+}

@@ -1,13 +1,11 @@
-export interface ServiceGeneratorSchema {
+export interface StackGeneratorSchema {
   id?: string;
   action?: 'create' | 'update' | 'delete' | 'get' | 'list';
   name?: string;
-  image?: string;
-  templateFile?: string;
   environment?: Record<string, string>;
-  ports?: string[];
   volumes?: string[];
   networks?: string[];
   sharedConfigs?: string[];
+  services?: string[];
   created_at?: Date;
 }

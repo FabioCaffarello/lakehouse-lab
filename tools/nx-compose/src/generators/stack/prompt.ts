@@ -1,84 +1,37 @@
 import { prompt } from 'enquirer';
 import { askAction, pickActions } from '../common/prompt';
-import { ServiceGeneratorSchema } from './schema';
-import { listYamlTemplates } from '../common/templates';
+import { StackGeneratorSchema } from './schema';
 
-const serviceChoices = pickActions([
-  'create',
-  'update',
-  'delete',
-  'get',
-  'list',
-]);
+const stackChoices = pickActions(['create', 'update', 'delete', 'get', 'list']);
 
-export async function askServiceAction(): Promise<
+export async function askStackAction(): Promise<
   ServiceGeneratorSchema['action']
 > {
-  return askAction(
-    'Which service action do you want to perform?',
-    serviceChoices
-  );
+  return askAction('Which stack action do you want to perform?', stackChoices);
 }
 
 export async function askCreateOrUpdateProps(
   templatesDir: string,
-  existing?: Partial<ServiceGeneratorSchema>
-): Promise<Omit<ServiceGeneratorSchema, 'action' | 'id'>> {
+  existing?: Partial<StackGeneratorSchema>
+): Promise<Omit<StackGeneratorSchema, 'action' | 'id'>> {
   const { name } = await prompt<{ name: string }>([
     {
       type: 'input',
       name: 'name',
-      message: 'Service name:',
+      message: 'Stack name:',
       initial: existing?.name,
       validate: (v: string) =>
         v.trim().length >= 2 ? true : 'Minimum of 2 characters',
     },
   ]);
 
-  const templates = listYamlTemplates(templatesDir);
-  const { useTemplates } = await prompt<{ useTemplates: boolean }>([
-    {
-      type: 'confirm',
-      name: 'useTemplates',
-      message: 'Do you want to select YAML templates? (no → provide image)',
-      initial: !!existing?.templates?.length,
-    },
-  ]);
-
-  let image: string | undefined;
-  let selectedTemplate: string | undefined;
-  if (useTemplates) {
-    const { templateFile } = await prompt<{ templateFile: string }>([
-      {
-        type: 'select',
-        name: 'templateFile',
-        message: 'Select YAML template:',
-        choices: templates,
-        initial: existing?.templateFile,
-      },
-    ]);
-    selectedTemplate = templateFile;
-  } else {
-    const { image: img } = await prompt<{ image: string }>([
-      {
-        type: 'input',
-        name: 'image',
-        message: 'Docker image:',
-        initial: existing?.image,
-        validate: (v: string) =>
-          v.trim().length > 0 ? true : 'Image cannot be empty',
-      },
-    ]);
-    image = img;
-  }
-
-  const { environment, ports, volumes, networks, sharedConfigs } =
+  const { environment, volumes, networks, sharedConfigs, services } =
     await prompt<{
-      environment: string;
-      ports: string;
-      volumes: string;
-      networks: string;
-      sharedConfigs: string;
+      environment: Record<string, string>;
+      volumes: string[];
+      networks: string[];
+      sharedConfigs: string[];
+      services: string[];
     }>([
       {
         type: 'input',
@@ -92,12 +45,6 @@ export async function askCreateOrUpdateProps(
       },
       {
         type: 'input',
-        name: 'ports',
-        message: 'Ports (comma separated):',
-        initial: existing?.ports?.join(',') || '',
-      },
-      {
-        type: 'input',
         name: 'volumes',
         message: 'Volumes (comma separated):',
         initial: existing?.volumes?.join(',') || '',
@@ -105,14 +52,20 @@ export async function askCreateOrUpdateProps(
       {
         type: 'input',
         name: 'networks',
-        message: 'Networks (comma separated)',
+        message: 'Networks (comma separated):',
         initial: existing?.networks?.join(',') || '',
       },
       {
         type: 'input',
         name: 'sharedConfigs',
-        message: 'Shared config names to apply (comma separated)',
+        message: 'Shared Configs Names (comma separated):',
         initial: existing?.sharedConfigs?.join(',') || '',
+      },
+      {
+        type: 'input',
+        name: 'services',
+        message: 'Services Names (comma separated):',
+        initial: existing?.services?.join(',') || '',
       },
     ]);
 
@@ -123,12 +76,6 @@ export async function askCreateOrUpdateProps(
           return [k.trim(), rest.join('=').trim()];
         })
       )
-    : undefined;
-  const portsArr = ports
-    ? ports
-        .split(',')
-        .map((p) => p.trim())
-        .filter(Boolean)
     : undefined;
   const volumesArr = volumes
     ? volumes
@@ -148,16 +95,20 @@ export async function askCreateOrUpdateProps(
         .map((s) => s.trim())
         .filter(Boolean)
     : undefined;
+  const servicesArr = services
+    ? services
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean)
+    : undefined;
 
   return {
     name,
-    image,
-    templateFile: selectedTemplate,
     environment: envObj,
-    ports: portsArr,
     volumes: volumesArr,
     networks: networksArr,
     sharedConfigs: sharedConfigsArr,
+    services: servicesArr,
   };
 }
 
@@ -165,7 +116,7 @@ export async function askForId(): Promise<string> {
   const { id } = await prompt<{ id: string }>({
     type: 'input',
     name: 'id',
-    message: 'Service id:',
+    message: 'Stack id:',
     validate: (v) => (!!v ? true : 'Required'),
   });
   return id;
@@ -175,7 +126,7 @@ export async function askForName(): Promise<string> {
   const { name } = await prompt<{ name: string }>({
     type: 'input',
     name: 'name',
-    message: 'Service name:',
+    message: 'Stack name:',
     validate: (v) => (!!v ? true : 'Required'),
   });
   return name;

@@ -1,11 +1,10 @@
-export interface ServiceGeneratorSchema {
+export interface ComposerGeneratorSchema {
   id?: string;
   action?: 'create' | 'update' | 'delete' | 'get' | 'list';
   name?: string;
-  image?: string;
-  templateFile?: string;
+  stacks?: string[];
+  services?: string[];
   environment?: Record<string, string>;
-  ports?: string[];
   volumes?: string[];
   networks?: string[];
   sharedConfigs?: string[];
