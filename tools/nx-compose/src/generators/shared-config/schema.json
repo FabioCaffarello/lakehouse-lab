@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "$id": "SharedConfig",
+  "title": "",
+  "type": "object",
+  "properties": {
+    "action": {
+      "type": "string",
+      "enum": ["create", "update", "delete", "get", "list"]
+    },
+    "id": { "type": "string" },
+    "name": { "type": "string" },
+    "templates": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "appliesTo": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "environment": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "volumes": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "networks": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "required": ["action"]
+}

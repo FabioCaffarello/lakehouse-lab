@@ -1,0 +1,24 @@
+{
+  "generators": {
+    "shared-config": {
+      "factory": "./src/generators/shared-config/shared-config",
+      "schema": "./src/generators/shared-config/schema.json",
+      "description": "shared-config generator"
+    },
+    "service": {
+      "factory": "./src/generators/service/service",
+      "schema": "./src/generators/service/schema.json",
+      "description": "service generator"
+    },
+    "stack": {
+      "factory": "./src/generators/stack/stack",
+      "schema": "./src/generators/stack/schema.json",
+      "description": "stack generator"
+    },
+    "composer": {
+      "factory": "./src/generators/composer/composer",
+      "schema": "./src/generators/composer/schema.json",
+      "description": "composer generator"
+    }
+  }
+}
