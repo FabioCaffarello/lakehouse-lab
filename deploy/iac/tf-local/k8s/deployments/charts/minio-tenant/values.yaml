@@ -121,13 +121,13 @@ tenant:
     # The number of MinIO Tenant Pods / Servers in this pool.
     # For standalone mode, supply 1. For distributed mode, supply 4 or more.
     # Note that the operator does not support upgrading from standalone to distributed mode.
-    - servers: 4
+    - servers: 2
       ###
       # Custom name for the pool
       name: pool-lakehouse-0
       ###
       # The number of volumes attached per MinIO Tenant Pod / Server.
-      volumesPerServer: 4
+      volumesPerServer: 2
       ###
       # The capacity per volume requested per MinIO Tenant Pod.
       size: 2Gi
@@ -137,7 +137,7 @@ tenant:
       # If using Amazon Elastic Block Store (EBS) CSI driver
       # Please make sure to set xfs for "csi.storage.k8s.io/fstype" parameter under StorageClass.parameters.
       # Docs: https://github.com/kubernetes-sigs/aws-ebs-csi-driver/blob/master/docs/parameters.md
-      # storageClassName: standard
+      storageClassName: standard
       ###
       # Specify `storageAnnotations <https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/>`__ to associate to PVCs.
       storageAnnotations: {}
@@ -186,8 +186,28 @@ tenant:
         runAsUser: 1000
         runAsGroup: 1000
         fsGroup: 1000
-        fsGroupChangePolicy: "Always"
+        fsGroupChangePolicy: "OnRootMismatch"
         runAsNonRoot: true
+      initContainers:
+        - name: fix-permissions
+          image: busybox
+          command:
+            - sh
+            - -c
+            - |
+              for dir in /export0 /export1; do
+                if [ -d "$dir" ]; then
+                  echo "Fixing permissions for $dir"
+                  chown -R 1000:1000 "$dir"
+                else
+                  echo "Directory $dir does not exist, skipping"
+                fi
+              done
+          volumeMounts:
+            - name: export0
+              mountPath: /export0
+            - name: export1
+              mountPath: /export1
       ###
       # The Kubernetes `SecurityContext <https://kubernetes.io/docs/tasks/configure-pod-container/security-context/>`__ to use for deploying Tenant containers.
       # You may need to modify these values to meet your cluster's security and access settings.
