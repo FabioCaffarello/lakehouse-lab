@@ -196,12 +196,8 @@ tenant:
             - -c
             - |
               for dir in /export0 /export1; do
-                if [ -d "$dir" ]; then
-                  echo "Fixing permissions for $dir"
-                  chown -R 1000:1000 "$dir"
-                else
-                  echo "Directory $dir does not exist, skipping"
-                fi
+                echo "Fixing permissions on $dir"
+                chown -R 1000:1000 "$dir"
               done
           volumeMounts:
             - name: export0
