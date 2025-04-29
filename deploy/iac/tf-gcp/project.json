@@ -1,0 +1,42 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "tf-gcp",
+  "sourceRoot": "./src",
+  "targets": {
+    "fmt": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "terraform fmt --recursive",
+        "cwd": "{projectRoot}"
+      }
+    },
+    "plan": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "terraform plan",
+        "cwd": "{projectRoot}/src"
+      }
+    },
+    "initialize": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "terraform init --backend-config=\"bucket=$GCP_BUCKET_NAME\"",
+        "cwd": "{projectRoot}/src"
+      }
+    },
+    "apply": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "terraform apply -auto-approve",
+        "cwd": "{projectRoot}/src"
+      }
+    },
+    "destroy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "terraform destroy -auto-approve",
+        "cwd": "{projectRoot}/src"
+      }
+    }
+  }
+}
