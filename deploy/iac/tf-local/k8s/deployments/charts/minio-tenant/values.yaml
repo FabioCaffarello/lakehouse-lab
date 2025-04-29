@@ -186,7 +186,7 @@ tenant:
         runAsUser: 1000
         runAsGroup: 1000
         fsGroup: 1000
-        fsGroupChangePolicy: "OnRootMismatch"
+        fsGroupChangePolicy: "Always"
         runAsNonRoot: true
       ###
       # The Kubernetes `SecurityContext <https://kubernetes.io/docs/tasks/configure-pod-container/security-context/>`__ to use for deploying Tenant containers.
