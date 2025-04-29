@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     repoURL: git@github.com:FabioCaffarello/lakehouse-lab.git
-    targetRevision: feat/nx-plugin-integration
+    targetRevision: HEAD
     path: deploy/iac/tf-local/k8s/deployments/nginx/deploy.yaml
   destination:
     server: https://kubernetes.default.svc
