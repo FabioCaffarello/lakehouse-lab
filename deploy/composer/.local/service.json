@@ -1,0 +1,161 @@
+[
+  {
+    "service_id": "25fa329e-e4c4-45c7-9588-27a859669e89",
+    "name": "webserber",
+    "templateFile": "airflow-webserver.yaml",
+    "environment": {},
+    "ports": [],
+    "volumes": [],
+    "networks": [],
+    "sharedConfigs": [
+      "dcd54ce1-8e5e-4a3e-a817-a1540798b9d6"
+    ],
+    "created_at": "2025-04-24T19:02:12.854Z"
+  },
+  {
+    "service_id": "2e5a5bbb-ce84-4f72-9800-c12f1bba0999",
+    "name": "scheduler",
+    "templateFile": "airflow-scheduler.yaml",
+    "environment": {},
+    "ports": [],
+    "volumes": [],
+    "networks": [],
+    "sharedConfigs": [
+      "dcd54ce1-8e5e-4a3e-a817-a1540798b9d6"
+    ],
+    "created_at": "2025-04-24T19:02:58.542Z"
+  },
+  {
+    "service_id": "39c861b6-3bc8-4762-88b8-0c7708565ba7",
+    "name": "postgres-airflow",
+    "templateFile": "airflow-postgres.yaml",
+    "environment": {},
+    "ports": [],
+    "volumes": [],
+    "networks": [],
+    "sharedConfigs": [],
+    "created_at": "2025-04-24T19:03:26.276Z"
+  },
+  {
+    "service_id": "8b04b955-541e-44f3-8a7e-ad3ea3e9f297",
+    "name": "kafka-controller-1",
+    "templateFile": "kafka-broker-1.yaml",
+    "environment": {},
+    "ports": [],
+    "volumes": [],
+    "networks": [],
+    "sharedConfigs": [
+      "36bfd977-7f49-4107-82cf-cdafc1b9d313",
+      "69124831-1aa0-4c5c-a922-06f1c7391bee"
+    ],
+    "created_at": "2025-04-24T19:27:58.082Z"
+  },
+  {
+    "service_id": "33c5f2eb-53e6-4dc2-93e0-72f9bf618de9",
+    "name": "kafka-controller-2",
+    "templateFile": "kafka-broker-2.yaml",
+    "environment": {},
+    "ports": [],
+    "volumes": [],
+    "networks": [],
+    "sharedConfigs": [
+      "36bfd977-7f49-4107-82cf-cdafc1b9d313",
+      "69124831-1aa0-4c5c-a922-06f1c7391bee"
+    ],
+    "created_at": "2025-04-24T19:28:39.584Z"
+  },
+  {
+    "service_id": "ff70cf62-6a36-4e5c-869f-e4af9cfeb07d",
+    "name": "kafka-broker-1",
+    "templateFile": "kafka-broker-1.yaml",
+    "environment": {},
+    "ports": [],
+    "volumes": [],
+    "networks": [],
+    "sharedConfigs": [],
+    "created_at": "2025-04-24T19:29:14.034Z"
+  },
+  {
+    "service_id": "fed73ac8-3158-4e70-867d-8bbb2ae4002c",
+    "name": "kafka-broker-2",
+    "templateFile": "kafka-broker-2.yaml",
+    "environment": {},
+    "ports": [],
+    "volumes": [],
+    "networks": [],
+    "sharedConfigs": [],
+    "created_at": "2025-04-24T19:29:47.108Z"
+  },
+  {
+    "service_id": "9bfde54d-455e-497b-a5eb-9797125c2aa7",
+    "name": "kafka-console",
+    "templateFile": "kafka-console.yaml",
+    "environment": {},
+    "ports": [],
+    "volumes": [],
+    "networks": [],
+    "sharedConfigs": [],
+    "created_at": "2025-04-24T19:30:17.837Z"
+  },
+  {
+    "service_id": "65a63442-db27-4437-b3ef-3202b16f6b0e",
+    "name": "minio",
+    "templateFile": "minio.yaml",
+    "environment": {},
+    "ports": [],
+    "volumes": [],
+    "networks": [],
+    "sharedConfigs": [],
+    "created_at": "2025-04-24T19:30:41.803Z"
+  },
+  {
+    "service_id": "df6aefe1-337a-4a2b-8545-24ccd94750f3",
+    "name": "minio-mc",
+    "templateFile": "mc.yaml",
+    "environment": {},
+    "ports": [],
+    "volumes": [],
+    "networks": [],
+    "sharedConfigs": [],
+    "created_at": "2025-04-24T19:31:16.432Z"
+  },
+  {
+    "service_id": "eda8f596-332b-4b9c-9e82-cc517ff4fb79",
+    "name": "spark-master",
+    "templateFile": "spark-master.yaml",
+    "environment": {},
+    "ports": [],
+    "volumes": [],
+    "networks": [],
+    "sharedConfigs": [
+      "a150a2fc-3a92-42d1-a058-52aa9ecc80af"
+    ],
+    "created_at": "2025-04-24T19:31:48.572Z"
+  },
+  {
+    "service_id": "98f87c08-8d17-4c6f-974b-599a055fde83",
+    "name": "spark-worker-1",
+    "templateFile": "spark-worker-1.yaml",
+    "environment": {},
+    "ports": [],
+    "volumes": [],
+    "networks": [],
+    "sharedConfigs": [
+      "a150a2fc-3a92-42d1-a058-52aa9ecc80af"
+    ],
+    "created_at": "2025-04-24T19:32:24.139Z"
+  },
+  {
+    "service_id": "6e72a8ba-0fe0-43c7-89c4-885263b87d3f",
+    "name": "spark-worker-2",
+    "templateFile": "spark-worker-2.yaml",
+    "environment": {},
+    "ports": [],
+    "volumes": [],
+    "networks": [],
+    "sharedConfigs": [
+      "a150a2fc-3a92-42d1-a058-52aa9ecc80af"
+    ],
+    "created_at": "2025-04-24T19:32:59.550Z"
+  }
+]

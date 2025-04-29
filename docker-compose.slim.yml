@@ -138,8 +138,6 @@ services:
 
 
 
-
-
           brokers: [kafka-broker-1:19092,kafka-broker-2:19092]
           schemaRegistry:
             enabled: false
@@ -147,16 +145,9 @@ services:
         redpanda:
 
 
-
-
             enabled: false
             urls: ["http://kafka_broker:9644"]
         connect:
-
-
-
-
-
 
           enabled: false
           clusters:

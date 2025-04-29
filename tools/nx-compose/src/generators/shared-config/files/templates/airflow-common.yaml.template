@@ -1,0 +1,13 @@
+x-airflow-common: &airflow-common
+  image: fabiocaffarello/airflow-app:latest
+  env_file:
+    - ./airflow.env
+  volumes:
+    - ./services/airflow-app/airflow_app/jobs:/opt/airflow/jobs
+    - ./services/airflow-app/airflow_app/dags:/opt/airflow/dags
+    - ./services/airflow-app/airflow_app/logs:/opt/airflow/logs
+    - ./services/airflow-app/airflow_app/plugins:/opt/airflow/plugins
+  depends_on:
+    - postgres
+  networks:
+    - template-network

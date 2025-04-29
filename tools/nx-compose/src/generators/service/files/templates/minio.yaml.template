@@ -1,0 +1,16 @@
+minio:
+  restart: always
+  image: minio/minio
+  platform: linux/amd64
+  container_name: minio_s3
+  ports:
+    - "9000:9000"
+    - "9001:9001"
+  command: server /data --console-address ":9001" --address ":9000"
+  environment:
+    MINIO_ROOT_USER: ${MINIO_USERNAME}
+    MINIO_ROOT_PASSWORD: ${MINIO_PASSWORD}
+  volumes:
+    - minio-data:/data
+  networks:
+    - template-network

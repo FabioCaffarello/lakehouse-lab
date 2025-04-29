@@ -1,0 +1,8 @@
+webserver:
+  !!merge <<: *airflow-common
+  container_name: webserver
+  command: webserver
+  ports:
+    - "8085:8080"
+  depends_on:
+    - scheduler

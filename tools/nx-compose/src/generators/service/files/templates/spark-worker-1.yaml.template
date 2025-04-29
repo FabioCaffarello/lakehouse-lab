@@ -1,0 +1,11 @@
+spark-worker-1: &spark-worker
+  !!merge <<: *spark-common
+  command: bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
+  container_name: spark-worker-1
+  depends_on:
+    - spark-master
+  environment:
+    SPARK_MODE: worker
+    SPARK_WORKER_CORES: 1
+    SPARK_WORKER_MEMORY: 1g
+    SPARK_MASTER_URL: spark://spark-master:7077

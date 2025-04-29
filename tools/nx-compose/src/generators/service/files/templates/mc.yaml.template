@@ -1,0 +1,15 @@
+mc:
+  image: minio/mc
+  platform: linux/amd64
+  depends_on:
+    - minio
+  container_name: mc
+  env_file:
+    - .env.slim
+  entrypoint: >
+    /bin/sh -c " echo 'Waiting for MinIO to start...' && /bin/sleep 10 && mc alias set minio http://minio:9000 $$AWS_ACCESS_KEY_ID $$AWS_SECRET_ACCESS_KEY && mc mb minio/silver && echo 'Buckets created.'"
+
+  volumes:
+    - ./scripts/wait-for-it.sh:/tmp/wait-for-it.sh
+  networks:
+    - template-network
