@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: git@github.com:FabioCaffarello/lakehouse-lab.git
     targetRevision: feat/nx-plugin-integration
-    path: deploy/iac/tf-local/k8s/deployments
+    path: deploy/iac/tf-local/k8s/deployments/nginx
   destination:
     server: https://kubernetes.default.svc
     namespace: testns
