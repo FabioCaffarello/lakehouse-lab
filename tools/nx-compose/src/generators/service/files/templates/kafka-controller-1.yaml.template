@@ -1,0 +1,9 @@
+kafka-controller-1:
+  !!merge <<: *kafka-controller-base
+  container_name: kafka-controller-1
+  hostname: kafka-controller-1
+  environment:
+    !!merge <<: *kafka-controller-env
+    KAFKA_NODE_ID: 1
+  volumes:
+    - ./.volumes/kafka/controler_data_1:/var/lib/kafka/data

@@ -1,11 +1,34 @@
 {
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "name": "composer",
+  "sourceRoot": ".",
   "targets": {
-    "test": {
+    "shared-config": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "echo 'Hello from composer project!'"
+        "command": "npx nx generate @lakehouse-lab/nx-compose:shared-config --action={args.action}",
+        "cwd": "{projectRoot}"
+      }
+    },
+    "service": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx nx generate @lakehouse-lab/nx-compose:service --action={args.action}",
+        "cwd": "{projectRoot}"
+      }
+    },
+    "stack": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx nx generate @lakehouse-lab/nx-compose:stack --action={args.action}",
+        "cwd": "{projectRoot}"
+      }
+    },
+    "composer": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx nx generate @lakehouse-lab/nx-compose:composer --action={args.action}",
+        "cwd": "{projectRoot}"
       }
     }
   }

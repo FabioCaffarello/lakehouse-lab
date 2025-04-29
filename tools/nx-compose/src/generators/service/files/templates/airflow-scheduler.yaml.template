@@ -1,0 +1,7 @@
+scheduler:
+  !!merge <<: *airflow-common
+  container_name: scheduler
+  depends_on:
+    postgres:
+      condition: service_healthy
+  command: bash -c "airflow db migrate && airflow users create --username admin --firstname Fabio --lastname Caffarello --role Admin --email fabio.caffarello@gmail.com --password admin && airflow scheduler"

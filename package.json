@@ -40,5 +40,6 @@
     "tslib": "^2.3.0",
     "typescript": "~5.7.2",
     "typescript-eslint": "^8.19.0"
-  }
+  },
+  "nx": {}
 }

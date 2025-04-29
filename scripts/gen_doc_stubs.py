@@ -20,10 +20,8 @@ def process_patterns(project_path, custom_patterns):
 # Process parent directories containing multiple projects
 def walk_and_process_parent_dir(project_path):
     parent_path = project_path.parent
-    while (
-        parent_path != src_root.joinpath("libs")
-        and path != src_root.joinpath("services")
-        and path != src_root.joinpath("chalanges")
+    while parent_path != src_root.joinpath("libs") and path != src_root.joinpath(
+        "services"
     ):
         dir_path = str(parent_path)
         if parent_path == src_root:

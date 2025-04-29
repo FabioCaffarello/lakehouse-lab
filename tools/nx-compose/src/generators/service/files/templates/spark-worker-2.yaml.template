@@ -1,0 +1,3 @@
+spark-worker-2:
+  !!merge <<: *spark-worker
+  container_name: spark-worker-2

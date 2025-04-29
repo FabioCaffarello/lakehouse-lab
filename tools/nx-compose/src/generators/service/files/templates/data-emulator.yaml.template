@@ -1,0 +1,11 @@
+data-emulator:
+  image: fabiocaffarello/data-emulator:latest
+  container_name: data-emulator
+  ports:
+    - "8000:8000"
+  depends_on:
+    - console
+  env_file:
+    - .env.slim
+  networks:
+    - template-network

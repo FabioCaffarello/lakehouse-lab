@@ -74,10 +74,10 @@ build-docs:
 
 lint-all:
 	npx nx run-many --target=lint --all
+	npx nx run-many --target=fmt --all
 
 lint-affected:
 	npx nx affected -t lint
-	npx nx affected -t fmt
 
 check-all:
 	npx nx run-many --target=test --all

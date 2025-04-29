@@ -1,0 +1,10 @@
+x-spark-common: &spark-common
+  build:
+    context: ./deploy/docker/spark/
+    dockerfile: Dockerfile
+  volumes:
+    - ./services/airflow-app/airflow_app/jobs:/opt/bitnami/spark/jobs
+    - ./.artefacts/spark/local-cluster/mnt/spark-checkpoints:/tmp/spark-checkpoints
+    - ./.artefacts/spark/local-cluster/mnt/spark-state:/tmp/spark-state
+  networks:
+    - template-network

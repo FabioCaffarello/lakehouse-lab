@@ -1,0 +1,9 @@
+x-kafka-controller-base: &kafka-controller-base
+  image: apache/kafka:3.8.1
+  restart: on-failure
+  networks:
+    - template-network
+  healthcheck:
+    test: ["CMD", "nc", "-z", "localhost", "9093"]
+    interval: 20s
+    timeout: 5s
