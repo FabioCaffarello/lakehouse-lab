@@ -1,0 +1,4 @@
+server:
+  insecure: true
+  service:
+    type: ClusterIP
