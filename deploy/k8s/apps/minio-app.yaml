@@ -1,17 +1,14 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: minio-operator
+  name: minio-app
   namespace: argocd
 spec:
   project: default
   source:
     repoURL: https://github.com/FabioCaffarello/lakehouse-lab
     targetRevision: feat/nx-plugin-integration
-    path: deploy/iac/tf-local/k8s/deployments/charts/minio-operator
-    helm:
-      valueFiles:
-        - values.yaml
+    path: deploy/k8s/resources/minio
   destination:
     name: 'in-cluster'
     namespace: storage

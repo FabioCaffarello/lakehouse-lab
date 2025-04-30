@@ -1,0 +1,21 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "k8s",
+  "sourceRoot": "./apps",
+  "targets": {
+    "lock": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "find secrets -type f \\( -name '*.yaml' -o -name '*.yml' \\) -exec sh -c 'echo $K8S_SECRETS_PASSPHRASE | gpg --passphrase-fd 0 --batch --yes -c \"$0\" && rm \"$0\"' {} \\;",
+        "cwd": "{projectRoot}"
+      }
+    },
+    "unlock": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "find secrets -type f -name '*.gpg' -exec sh -c 'echo $K8S_SECRETS_PASSPHRASE | gpg --passphrase-fd 0 --batch --yes \"$0\"' {} \\;",
+        "cwd": "{projectRoot}"
+      }
+    }
+  }
+}

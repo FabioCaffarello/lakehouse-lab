@@ -1,0 +1,83 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: storage
+  labels:
+    name: storage
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: minio
+  namespace: storage
+  labels:
+    app: minio
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: minio
+      labels:
+        app: minio
+    spec:
+      volumes:
+        - name: data
+          emptyDir:
+            sizeLimit: 500Mi
+      containers:
+        - name: minio
+          image: quay.io/minio/minio:latest
+          imagePullPolicy: IfNotPresent
+          # env:
+          #   - name: MINIO_ROOT_USER
+          #     value: "minio"
+          #   - name: MINIO_ROOT_PASSWORD
+          #     value: "minio123"
+          livenessProbe:
+            httpGet:
+              path: /minio/health/live
+              port: 9000
+            initialDelaySeconds: 120
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /minio/health/ready
+              port: 9000
+            initialDelaySeconds: 120
+            periodSeconds: 20
+          resources:
+            requests:
+              memory: "1000Mi"
+              cpu: "1000m"
+            limits:
+              memory: "1500Mi"
+              cpu: "1500m"
+          volumeMounts:
+            - mountPath: /data
+              name: data
+          args:
+            - server
+            - /data
+            - --console-address
+            - ":9090"
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: minio
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: minio
+  namespace: storage
+spec:
+  selector:
+    app: minio
+  ports:
+    - port: 9090
+      name: console
+      targetPort: 9090
+    - port: 9000
+      name: s3
+      targetPort: 9000
+  type: ClusterIP
