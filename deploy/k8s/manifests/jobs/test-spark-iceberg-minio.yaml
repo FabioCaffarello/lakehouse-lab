@@ -12,9 +12,14 @@ spec:
   type: Python
   mode: cluster
   image: "fabiocaffarello/spark-iceberg:3.5.3-py"
-  imagePullPolicy: Always
-  mainApplicationFile: "s3a://lakehouse-lab-jobs/scripts/test-iceberg.py"
+  imagePullPolicy: IfNotPresent
+  mainApplicationFile: "s3a://lakehouse-lab-jobs/scripts/test_iceberg.py"
   sparkConf:
+    spark.driver.extraJavaOptions: "-Divy.cache.dir=/tmp -Divy.home=/tmp"
+    spark.hadoop.fs.s3a.endpoint: "http://minio.storage.svc.cluster.local:9000"
+    spark.hadoop.fs.s3a.access.key: "minio"
+    spark.hadoop.fs.s3a.secret.key: "minio123"
+    spark.hadoop.fs.s3a.connection.ssl.enabled: "false"
     spark.hadoop.fs.s3a.path.style.access: "True"
     spark.hadoop.fs.s3a.fast.upload: "True"
     spark.hadoop.fs.s3a.multipart.size: "104857600"

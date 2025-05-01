@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/FabioCaffarello/lakehouse-lab
     targetRevision: feat/nx-plugin-integration
-    path: deploy/k8s/resources/minio
+    path: deploy/k8s/manifests/resources/minio
   destination:
     name: 'in-cluster'
     namespace: storage

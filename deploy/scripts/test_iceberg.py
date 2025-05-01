@@ -20,7 +20,9 @@ def create_spark_session():
 
     # Default values for environment variables
     warehouse_path = os.getenv("WAREHOUSE_PATH", "s3a://warehouse")
-    s3_endpoint = os.getenv("S3_ENDPOINT", "http://localhost:9000")
+    s3_endpoint = os.getenv(
+        "S3_ENDPOINT", "http://minio.storage.svc.cluster.local:9000"
+    )
     s3_access_key = os.getenv("AWS_ACCESS_KEY_ID", "minio")
     s3_secret_key = os.getenv("AWS_SECRET_ACCESS_KEY", "minio123")
     catalog_name = os.getenv("ICEBERG_CATALOG", "local")
@@ -43,7 +45,7 @@ def create_spark_session():
         .config(f"spark.sql.catalog.{catalog_name}.warehouse", warehouse_path)
         .config(
             f"spark.sql.catalog.{catalog_name}.io-impl",
-            "org.apache.iceberg.aws.s3.S3FileIO",
+            "org.apache.iceberg.hadoop.HadoopFileIO",
         )
         .config(f"spark.sql.catalog.{catalog_name}.s3.endpoint", s3_endpoint)
         .config("spark.sql.defaultCatalog", catalog_name)
@@ -61,6 +63,7 @@ def create_spark_session():
 
 
 def main():
+    logger.info("Starting Iceberg MinIO demo")
     spark = create_spark_session()
 
     logger.info("Creating empty schema for demo.nyc.taxis")
@@ -76,7 +79,7 @@ def main():
     )
 
     df = spark.createDataFrame([], schema)
-    df.write.format("iceberg").mode("overwrite").save("demo.nyc.taxis")
+    df.write.format("iceberg").mode("overwrite").saveAsTable("demo.nyc.taxis")
 
     logger.info("Inserting data into demo.nyc.taxis")
 

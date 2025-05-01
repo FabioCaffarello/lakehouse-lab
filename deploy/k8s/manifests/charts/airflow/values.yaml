@@ -1,0 +1,15 @@
+fernetKey: WEZjaUhweGRZVWNzQTVYNVBzSXJWaDZ5Rlk0UjFRSmg=
+webserverSecretKey: WEZjaUhweGRZVWNzQTVYNVBzSXJWaDZ5Rlk0UjFRSmg=
+executor: "KubernetesExecutor"
+postgresql:
+  volumePermissions:
+    enabled: true
+dags:
+  gitSync:
+    enabled: true
+    repo: https://github.com/FabioCaffarello/lakehouse-lab.git
+    branch: feat/nx-plugin-integration
+    rev: HEAD
+    depth: 1
+    maxFailures: 0
+    subPath: "deploy/scripts/dags"

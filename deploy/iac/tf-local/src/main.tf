@@ -7,3 +7,13 @@ module "local-k8s" {
 module "argocd" {
   source = "./modules/helm/argocd"
 }
+
+module "dashboard" {
+  source    = "./modules/helm/kubectl-dashboard"
+  namespace = "kubernetes-dashboard"
+
+  providers = {
+    kubernetes = kubernetes
+    helm       = helm
+  }
+}
