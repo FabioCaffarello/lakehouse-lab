@@ -1,4 +1,3 @@
-
 resource "minikube_cluster" "minikube_docker" {
   provider     = minikube
   driver       = "docker"

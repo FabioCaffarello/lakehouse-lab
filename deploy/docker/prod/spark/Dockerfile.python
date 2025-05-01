@@ -1,0 +1,12 @@
+FROM fabiocaffarello/spark-iceberg:3.5.3
+
+ENV SPARK_HOME=/opt/spark
+ENV PATH="$SPARK_HOME/bin:$PATH"
+ENV PYTHONPATH=$SPARK_HOME/python/:$PYTHONPATH
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip3 install --no-cache-dir -r requirements.txt
+
+ENTRYPOINT [ "/opt/spark/entrypoint.sh" ]

@@ -1,17 +1,18 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: nginx-app
+  name: minio-app
   namespace: argocd
 spec:
   project: default
   source:
     repoURL: https://github.com/FabioCaffarello/lakehouse-lab
-    targetRevision: HEAD
-    path: deploy/iac/tf-local/k8s/deployments/nginx
+    targetRevision: feat/nx-plugin-integration
+    path: deploy/k8s/manifests/resources/minio
   destination:
-    server: https://kubernetes.default.svc
-    namespace: testns
+    name: 'in-cluster'
+    namespace: storage
+    server: ''
   syncPolicy:
     retry:
       limit: 2

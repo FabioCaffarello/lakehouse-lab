@@ -1,4 +1,6 @@
 server:
   insecure: true
   service:
-    type: ClusterIP
+    type: NodePort
+    nodePortHttp: 30080
+    nodePortHttps: 30443
