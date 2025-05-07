@@ -1,0 +1,12 @@
+services:
+  prometheus:
+    image: prom/prometheus:v3.0.0
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - metrics-network
+networks:
+  metrics-network:
+    name: metrics-network
+    driver: bridge

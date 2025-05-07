@@ -1,0 +1,38 @@
+services:
+  server-actor:
+    image: fabiocaffarello/server-actor:latest
+    container_name: server-actor
+    environment:
+      - HTTP_SERVER_ADDR=:8000
+      - CONSUL_ADDR=consul:8500
+    networks:
+      - lake-actor-cluster-network
+  consumer-binance:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE: consumer
+    image: marketmonkey/consumer:latest
+    command: /app/service --exchange binance
+    restart: unless-stopped
+    networks:
+      - marketmonkey-network
+    env_file: .env
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE: server
+    image: marketmonkey/server:latest
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+    networks:
+      - marketmonkey-network
+    env_file: .env
+networks:
+  lake-actor-cluster-network:
+    name: lake-actor-cluster-network
+    driver: bridge
