@@ -1,0 +1,21 @@
+services:
+  nats:
+    image: nats:latest
+    container_name: mm-nats
+    command: ["-c", "/etc/nats/nats-server.conf"]
+    ports:
+      - "127.0.0.1:4222:4222"
+      - "127.0.0.1:8222:8222"
+    volumes:
+      - ./nats-server.conf:/etc/nats/nats-server.conf
+      - nats_data:/data
+    networks:
+      - nats-network
+    restart: unless-stopped
+volumes:
+  nats_data:
+    driver: local
+networks:
+  nats-network:
+    name: nats-network
+    driver: bridge

@@ -1,1 +1,17 @@
 go 1.24
+
+use (
+	./libs/golang/actors/common/cmd
+	./libs/golang/actors/common/events
+	./libs/golang/actors/common/metrics
+	./libs/golang/actors/common/nats
+	./libs/golang/actors/common/rmq
+	./libs/golang/actors/common/settings
+	./libs/golang/actors/consumers/base
+	./libs/golang/actors/consumers/input
+	./libs/golang/actors/server/server
+	./libs/golang/actors/server/server-router
+	./libs/golang/actors/server/server-session
+	./services/lake-actors-cluster/consumer-actor
+	./services/lake-actors-cluster/server-actor
+)
