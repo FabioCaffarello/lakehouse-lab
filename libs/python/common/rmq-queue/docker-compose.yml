@@ -1,0 +1,30 @@
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - 5672:5672
+      - 15672:15672
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+      RABBITMQ_DEFAULT_VHOST: /
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - rmq-queue-network
+  rmq-queue:
+    image: fabiocaffarello/rmq-queue:latest
+    container_name: rmq-queue
+    environment:
+      - RABBITMQ_PORT_5672_TCP=tcp://guest:guest@rabbitmq:5672
+    links:
+      - rabbitmq
+    networks:
+      - rmq-queue-network
+networks:
+  rmq-queue-network:
+    name: rmq-queue-network
+    driver: bridge

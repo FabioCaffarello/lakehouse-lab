@@ -12,6 +12,12 @@ use (
 	./libs/golang/actors/server/server
 	./libs/golang/actors/server/server-router
 	./libs/golang/actors/server/server-session
+	./libs/golang/common/id/go-md5
+	./libs/golang/common/log
+	./libs/golang/common/resources/go-mongo
+	./libs/golang/common/types/type-tools
+	./services/api-gateway
+	./services/identity-service
 	./services/lake-actors-cluster/consumer-actor
 	./services/lake-actors-cluster/server-actor
 )

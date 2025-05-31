@@ -1,0 +1,8 @@
+services:
+  scraper-engine:
+    image: fabiocaffarello/scraper-engine:latest
+    container_name: scraper-engine
+networks:
+  scraper-engine-network:
+    name: scraper-engine-network
+    driver: bridge

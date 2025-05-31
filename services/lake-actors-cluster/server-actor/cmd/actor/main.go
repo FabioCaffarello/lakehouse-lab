@@ -6,8 +6,8 @@ import (
 	"os"
 
 	"github.com/anthdm/hollywood/actor"
-	"libs/golang/actors/server/server"
 	"libs/golang/actors/common/cmd"
+	"libs/golang/actors/server/server"
 )
 
 func main() {

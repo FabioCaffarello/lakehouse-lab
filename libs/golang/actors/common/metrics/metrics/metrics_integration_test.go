@@ -1,11 +1,12 @@
 //go:build integration
+
 package metrics
 
 import (
 	"io"
 	"net/http"
-	"strconv"
 	"net/http/httptest"
+	"strconv"
 	"testing"
 	"time"
 
@@ -38,7 +39,7 @@ func TestMetricsServer_StartAndExposeMetrics(t *testing.T) {
 	time.Sleep(500 * time.Millisecond)
 
 	resp, err := http.Get("http://localhost:" +
-	                      strconv.Itoa(server.port) + "/metrics")
+		strconv.Itoa(server.port) + "/metrics")
 	assert.NoError(t, err)
 	defer resp.Body.Close()
 

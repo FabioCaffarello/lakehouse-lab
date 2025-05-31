@@ -1,10 +1,11 @@
 //go:build integration
+
 package nats_test
 
 import (
 	"context"
-	"sync"
 	"os"
+	"sync"
 	"testing"
 	"time"
 
@@ -16,7 +17,7 @@ import (
 )
 
 const (
-	consumerStreamName  = "trades"               // <-- StreamType deve ser um valor válido
+	consumerStreamName  = "trades" // <-- StreamType deve ser um valor válido
 	consumerSubject     = "trades.BINANCE.BTCUSDT"
 	handlerErrorSubject = "trades.BINANCE.ETHUSDT"
 	multiMsgSubject     = "trades.BINANCE.LTCUSDT"

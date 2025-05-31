@@ -1,0 +1,8 @@
+services:
+  example-bot:
+    image: fabiocaffarello/example-bot:latest
+    container_name: example-bot
+networks:
+  example-bot-network:
+    name: example-bot-network
+    driver: bridge

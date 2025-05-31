@@ -55,10 +55,10 @@ func (s *ProducerIntegrationTestSuite) TearDownSuite() {
 
 func (s *ProducerIntegrationTestSuite) publishAndAssert(body []byte) {
 	s.engine.Send(s.producer, queue.PublishMessage{
-		Exchange:   "",
-		RoutingKey: s.queueName,
+		Exchange:    "",
+		RoutingKey:  s.queueName,
 		ContentType: "text/plain",
-		Body:       body,
+		Body:        body,
 	})
 
 	select {

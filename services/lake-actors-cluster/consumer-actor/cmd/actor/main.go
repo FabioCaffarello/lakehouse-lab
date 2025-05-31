@@ -5,9 +5,9 @@ import (
 	"log"
 	"os"
 
-	input "libs/golang/actors/consumers/input/consumer"
 	"libs/golang/actors/common/cmd"
 	"libs/golang/actors/common/settings/config"
+	input "libs/golang/actors/consumers/input/consumer"
 
 	"github.com/anthdm/hollywood/actor"
 	"github.com/joho/godotenv"
@@ -33,7 +33,7 @@ func main() {
 	}
 
 	var pid *actor.PID
-	switch *scope{
+	switch *scope {
 	case config.Input:
 		pid = e.Spawn(input.New(), "consumer", actor.WithID(config.Input))
 	default:

@@ -5,8 +5,8 @@ import "github.com/prometheus/client_golang/prometheus"
 var (
 	ConsumerPublishDuration = prometheus.NewHistogramVec(
 		prometheus.HistogramOpts{
-			Name: "consumer_publish_duration_us",
-			Help: "Time taken to publish messages in microseconds",
+			Name:    "consumer_publish_duration_us",
+			Help:    "Time taken to publish messages in microseconds",
 			Buckets: prometheus.ExponentialBuckets(1, 2, 15),
 		},
 		[]string{"exchange", "stream_type", "symbol"},

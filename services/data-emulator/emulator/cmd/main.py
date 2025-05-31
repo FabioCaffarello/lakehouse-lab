@@ -17,7 +17,6 @@ def _set_log_level_env_var(log_level: str):
     """
     Set the `LOG_LEVEL` environment variable for the `logger` module.
     """
-
     os.environ["LOG_LEVEL"] = log_level
 
 
@@ -35,14 +34,12 @@ def setup_service() -> tuple[Settings, logging.Logger]:
         kafka_username=os.getenv("KAFKA_USERNAME"),
         kafka_password=os.getenv("KAFKA_PASSWORD"),
     )
-
     log = setup_logging(__name__, log_level=args.log_level)
     _set_log_level_env_var(config.log_level)
     if args.verbose:
         log.info("Verbose mode enabled.")
     if args.debug:
         log.info("Debug mode activated.")
-
     return config, log
 
 

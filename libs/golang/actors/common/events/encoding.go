@@ -1,6 +1,5 @@
 package events
 
-
 import (
 	"libs/golang/actors/common/metrics/metrics"
 	"libs/golang/actors/common/nats/nats"

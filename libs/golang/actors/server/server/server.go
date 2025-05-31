@@ -3,10 +3,10 @@ package server
 import (
 	"encoding/json"
 	"fmt"
+	"libs/golang/actors/common/metrics/metrics"
 	"log/slog"
 	serverrouter "marketmonkey/actor/server_router"
 	serversession "marketmonkey/actor/server_session"
-	"libs/golang/actors/common/metrics/metrics"
 	"math"
 	"net/http"
 	"os"
@@ -31,7 +31,7 @@ type Server struct {
 	metrics *metrics.MetricsServer
 }
 
-func New(listenAddr string ) actor.Producer {
+func New(listenAddr string) actor.Producer {
 	return func() actor.Receiver {
 		return &Server{
 			listenAddr: listenAddr,

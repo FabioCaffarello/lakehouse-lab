@@ -1,10 +1,10 @@
 package queue
 
 import (
+	"fmt"
 	"log/slog"
 	"sync"
 	"time"
-	"fmt"
 
 	"github.com/anthdm/hollywood/actor"
 	"github.com/streadway/amqp"
