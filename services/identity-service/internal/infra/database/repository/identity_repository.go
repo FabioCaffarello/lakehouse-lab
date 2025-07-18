@@ -77,7 +77,17 @@ func (r *IdentityRepository) FindByToken(token vo.Token) (*Identity, error) {
 		return nil, errors.New("token cannot be empty")
 	}
 
-	record, err := r.client.GetByField(r.Database, r.Collection, "token", token)
+	filter := gomongo.Filter{
+		Fields: []gomongo.FilterField{
+			{
+				Name:               "user",
+				Value:              clientID,
+				ComparisonOperator: gomongo.Equal,
+			},
+		},
+	}
+
+	records, err := r.client.Get(r.database, r.collection, filter)
 	if err != nil {
 		if strings.Contains(err.Error(), "not found") {
 			logger.Warn("identity not found for token: %s", token)
@@ -118,4 +128,25 @@ func (r *IdentityRepository) FindAll() ([]*entity.Identity, error) {
 
 	logger.Debug("successfully found %d identities", len(identities))
 	return identities, nil
+}
+
+func (r *IdentityRepository) DeleteByID(id *vo.IdentityID) error {
+	logger := r.logger.Method("repository.IdentityRepository.DeleteByID")
+	if id == nil || id.IsEmpty() {
+		logger.Error("identity ID cannot be nil or empty")
+		return errors.New("identity ID cannot be nil or empty")
+	}
+
+	err := r.client.Remove(r.Database, r.Collection, id.String())
+	if err != nil {
+		if strings.Contains(err.Error(), "not found") {
+			logger.Warn("identity not found for deletion: %s", id.String())
+			return nil
+		}
+		logger.Error("failed to delete identity by ID %s: %v", id.String(), err)
+		return err
+	}
+
+	logger.Debug("identity deleted successfully: %s", id.String())
+	return nil
 }
