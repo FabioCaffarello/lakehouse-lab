@@ -1,0 +1,41 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "lake-actors-cluster",
+  "sourceRoot": ".",
+  "tags": ["lang:golang"],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx nx build lake-actors-cluster-{args.actor}-actor"
+      }
+    },
+    "image": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "source ./hack.sh {args.actor} {args.tag}",
+        "cwd": "{projectRoot}"
+      }
+    },
+    "up": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "docker-compose -f docker-compose.yml up -d",
+        "cwd": "{projectRoot}"
+      }
+    },
+    "down": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "docker-compose -f docker-compose.yml down",
+        "cwd": "{projectRoot}"
+      }
+    },
+    "logs": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "docker logs -f {args.actor}-actor"
+      }
+    }
+  }
+}

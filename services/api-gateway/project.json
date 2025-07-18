@@ -1,0 +1,72 @@
+{
+  "name": "api-gateway",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "services/api-gateway",
+  "tags": ["lang:golang"],
+  "targets": {
+    "build": {
+      "executor": "@nx-go/nx-go:build",
+      "options": {
+        "main": "{projectRoot}/cmd/server/main.go",
+        "outputPath": "{projectRoot}/dist/server"
+      }
+    },
+    "serve": {
+      "executor": "@nx-go/nx-go:serve",
+      "options": {
+        "main": "{projectRoot}/cmd/server/main.go"
+      }
+    },
+    "lint": {
+      "executor": "@nx-go/nx-go:lint"
+    },
+    "tidy": {
+      "executor": "@nx-go/nx-go:tidy"
+    },
+    "image": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "docker build -t fabiocaffarello/api-gateway:latest -f ./Dockerfile .",
+        "cwd": "{projectRoot}"
+      }
+    },
+    "gen-go-work": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "source ./scripts/hack/go/gen-go-work-docker.sh {projectName}",
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "image-dev": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["gen-go-work"],
+      "options": {
+        "command": "docker build -t fabiocaffarello/api-gateway:latest -f ./services/api-gateway/Dockerfile .",
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "go test ./... -tags=unit -covermode=atomic -v",
+        "cwd": "{projectRoot}"
+      }
+    },
+    "stop": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "docker compose down",
+        "cwd": "{projectRoot}"
+      }
+    },
+    "check-integration": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["stop", "image-dev"],
+      "options": {
+        "command": "docker compose run --rm api-gateway && docker compose down -v",
+        "cwd": "{projectRoot}"
+      }
+    }
+  }
+}

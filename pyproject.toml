@@ -69,6 +69,58 @@ package-mode = false
     path = "./services/airflow-app"
     develop = true
 
+    [tool.poetry.dependencies.frameworks-scraping-scraper-engine]
+    path = "./core/frameworks/scraping/scraper-engine"
+    develop = true
+
+    [tool.poetry.dependencies.python-common-logger]
+    path = "libs/python/common/logger"
+    develop = true
+
+    [tool.poetry.dependencies.python-common-cliargs]
+    path = "libs/python/common/cliargs"
+    develop = true
+
+    [tool.poetry.dependencies.services-capture-navigator-engine]
+    path = "./services/capture/navigator-engine"
+    develop = true
+
+    [tool.poetry.dependencies.python-capture-crawler-cliargs]
+    path = "libs/python/capture/crawler-cliargs"
+    develop = true
+
+    [tool.poetry.dependencies.services-capture-bots-example-bot]
+    path = "./services/capture/bots/example-bot"
+    develop = true
+
+    [tool.poetry.dependencies.python-capture-scraper-core]
+    path = "libs/python/capture/scraper-core"
+    develop = true
+
+    [tool.poetry.dependencies.python-common-rmq-queue]
+    path = "libs/python/common/rmq-queue"
+    develop = true
+
+    [tool.poetry.dependencies.python-common-pysd]
+    path = "libs/python/common/pysd"
+    develop = true
+
+    [tool.poetry.dependencies.python-common-pydebug]
+    path = "libs/python/common/pydebug"
+    develop = true
+
+    [tool.poetry.dependencies.python-common-stats-collector]
+    path = "libs/python/common/stats-collector"
+    develop = true
+
+    [tool.poetry.dependencies.python-common-pyoutput]
+    path = "libs/python/common/pyoutput"
+    develop = true
+
+    [tool.poetry.dependencies.python-common-pystatus]
+    path = "libs/python/common/pystatus"
+    develop = true
+
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^4.2.0"
 ruff = "^0.11.4"
